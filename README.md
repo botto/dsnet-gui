@@ -4,7 +4,9 @@ dsnet-gui is a web based gui for [dsnet](https://github.com/naggie)
 
 It's a very simple tool that gives you a self updating web ui about the dsnet controlled wireguard interface.
 
-To run do `sudo ./dsnet-gui serve`
+To make `make`  
+To run do `sudo ./dsnet-gui serve`  
+Open your browser to `http://127.0.0.1:20080`  
 
 There are plenty of cleanup items left to do on the list
 
