@@ -48,6 +48,5 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "/client",
-  "proxy": "http://127.0.0.1:20080/api/v1"
+  "homepage": "/client"
 }
