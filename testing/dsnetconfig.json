@@ -1,0 +1,34 @@
+{
+    "ExternalIP": "10.150.1.1",
+    "ListenPort": 51820,
+    "Domain": "dsnet",
+    "InterfaceName": "dsnet",
+    "Network": "10.253.140.0/22",
+    "IP": "10.253.140.1",
+    "DNS": "",
+    "Networks": [],
+    "ReportFile": "/var/lib/dsnetreport.json",
+    "PrivateKey": "oHu2Jk0L5TqOV7uODfrVj2Gd8WkT29HBTmA6twAg+l4=",
+    "Peers": [
+        {
+            "Hostname": "wgc1",
+            "Owner": "wgc1",
+            "Description": "client1",
+            "IP": "10.253.140.2",
+            "Added": "2020-09-19T12:50:51.476366292+01:00",
+            "Networks": [],
+            "PublicKey": "M8DuzjNKvkkmnM5cHAaAW7UFsImRvs2qWYlx0oslLiE=",
+            "PresharedKey": "nHttZNZfjGL+C6zw9Tum5zpDbI0pZMZCz0FEfbJDhNI="
+        },
+        {
+            "Hostname": "wgc2",
+            "Owner": "wgc2",
+            "Description": "wgc2",
+            "IP": "10.253.140.3",
+            "Added": "2020-09-19T12:51:41.00019216+01:00",
+            "Networks": [],
+            "PublicKey": "iKZnO69TCfMIAtOxG5x1nvbKzDQ8cpTe7e5w8u8JZ2U=",
+            "PresharedKey": "7Wk62+AdjuDD8cuHISFqubBQclD0EX4v3ixY7O0xOm4="
+        }
+    ]
+}
