@@ -11,11 +11,11 @@ function teardown() {
 }
 
 function restoreDsnet() {
+    dsnet down
     rm /etc/dsnetconfig.json
     if [[ -f /etc/dsnetconfig.json ]]; then
-        cp /etc/dsnetconfig.conf.bak /etc/dsnetconfig.conf
+        cp /etc/dsnetconfig.json.bak /etc/dsnetconfig.json
     fi
-    dsnet down
 }
 
 teardown 0

@@ -11,13 +11,13 @@
     "PrivateKey": "oHu2Jk0L5TqOV7uODfrVj2Gd8WkT29HBTmA6twAg+l4=",
     "Peers": [
         {
-            "Hostname": "wgc1",
+            "Hostname": "wgc0",
             "Owner": "wgc1",
-            "Description": "client1",
+            "Description": "wgc0",
             "IP": "10.253.140.2",
             "Added": "2020-09-19T12:50:51.476366292+01:00",
             "Networks": [],
-            "PublicKey": "M8DuzjNKvkkmnM5cHAaAW7UFsImRvs2qWYlx0oslLiE=",
+            "publicKey": "meNJZ/tBBHyr0N7b3U1mWSd9Qk94gCFGu+hE5MJ9klc=",
             "PresharedKey": "nHttZNZfjGL+C6zw9Tum5zpDbI0pZMZCz0FEfbJDhNI="
         },
         {
@@ -27,7 +27,7 @@
             "IP": "10.253.140.3",
             "Added": "2020-09-19T12:51:41.00019216+01:00",
             "Networks": [],
-            "PublicKey": "iKZnO69TCfMIAtOxG5x1nvbKzDQ8cpTe7e5w8u8JZ2U=",
+            "PublicKey": "cZ42dUH5UQW0JhNW4rKZV3zJL890/dCBQPT6wTzbz38=",
             "PresharedKey": "7Wk62+AdjuDD8cuHISFqubBQclD0EX4v3ixY7O0xOm4="
         }
     ]

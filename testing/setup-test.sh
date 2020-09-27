@@ -27,9 +27,9 @@ function setup() {
 
 function configureDsnet() {
     if [[ -f /etc/dsnetconfig.json ]]; then
-        cp /etc/dsnetconfig.json /etc/dsnetconfig.conf.bak
+        cp /etc/dsnetconfig.json /etc/dsnetconfig.json.bak
     fi
-    cp ./dsnetconfig.json /etc/dsnetconfig.conf
+    cp ./dsnetconfig.json /etc/dsnetconfig.json
     dsnet up
 }
 
