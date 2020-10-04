@@ -1,6 +1,7 @@
 package reportapi
 
 import (
+	"fmt"
 	"sort"
 
 	"github.com/naggie/dsnet"
@@ -19,16 +20,25 @@ type Report struct {
 	TimeSeries *TimeSeriesType
 }
 
-func getReport() *Report {
+func getReport() Report {
 	timeSeriesLock.Lock()
 	defer func() {
 		timeSeriesLock.Unlock()
 	}()
 
+	wg, err := wgctrl.New()
+	if err != nil {
+		fmt.Printf("There was a problem: %s", err)
+		return Report{}
+	}
+	defer wg.Close()
+
+	dev, err := wg.Device(conf.InterfaceName)
+
 	newData := dsnet.GenerateReport(dev, conf, nil)
 
 	if timeRing.TX.Len() == 0 || timeRing.RX.Len() == 0 {
-		return &Report{&newData, nil}
+		return Report{&newData, nil}
 	}
 
 	txSeries := make([]*DataPoint, 0, SampleSize)
@@ -54,5 +64,5 @@ func getReport() *Report {
 		RX: rxSeries,
 	}
 
-	return &Report{&newData, timeSeries}
+	return Report{&newData, timeSeries}
 }

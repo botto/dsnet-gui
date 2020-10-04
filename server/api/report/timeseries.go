@@ -2,10 +2,12 @@ package reportapi
 
 import (
 	"container/ring"
+	"fmt"
 	"sync"
 	"time"
 
 	"github.com/naggie/dsnet"
+	"golang.zx2c4.com/wireguard/wgctrl"
 )
 
 // DataPoint is a single timestamped point
@@ -50,6 +52,17 @@ func init() {
 func updateTimeSeriesData() {
 	timeSeriesLock.Lock()
 	defer timeSeriesLock.Unlock()
+	wg, err := wgctrl.New()
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	defer wg.Close()
+	dev, err := wg.Device(conf.InterfaceName)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
 	newData := dsnet.GenerateReport(dev, conf, nil)
 
 	timeRing.TX.Value = &DataPoint{

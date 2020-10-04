@@ -1,38 +1,28 @@
 package reportapi
 
 import (
+	"fmt"
 	"log"
-	"os"
-	"os/signal"
 
 	"github.com/gin-gonic/gin"
 	"github.com/naggie/dsnet"
 	"golang.zx2c4.com/wireguard/wgctrl"
-	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
 
 var conf *dsnet.DsnetConfig
-var dev *wgtypes.Device
 
 func init() {
-	var err error
-	if wg, err = wgctrl.New(); err != nil {
+	wg, err := wgctrl.New()
+	if err != nil {
 		log.Panic("could not get wgctrl handler")
 	}
+	defer wg.Close()
 	conf = dsnet.MustLoadDsnetConfig()
-	dev, err = wg.Device(conf.InterfaceName)
+	_, err = wg.Device(conf.InterfaceName)
 	if err != nil {
 		log.Panicf("could not get device, %s", err)
 		return
 	}
-
-	go func() {
-		quit := make(chan os.Signal)
-		signal.Notify(quit, os.Interrupt)
-		<-quit
-		log.Println("closing wg control handler")
-		wg.Close()
-	}()
 }
 
 // Routes sets up endpoints for peers.
@@ -42,5 +32,6 @@ func Routes(router *gin.RouterGroup) {
 
 func handleGetReport(c *gin.Context) {
 	newReport := getReport()
+	fmt.Printf("\n\nReport: %+v\n\n", newReport.Report)
 	c.JSON(200, newReport)
 }
