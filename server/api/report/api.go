@@ -1,7 +1,6 @@
 package reportapi
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -32,6 +31,5 @@ func Routes(router *gin.RouterGroup) {
 
 func handleGetReport(c *gin.Context) {
 	newReport := getReport()
-	fmt.Printf("\n\nReport: %+v\n\n", newReport.Report)
 	c.JSON(200, newReport)
 }
