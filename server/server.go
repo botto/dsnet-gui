@@ -13,18 +13,16 @@ import (
 	"github.com/spf13/viper"
 )
 
-var router = gin.Default()
+var router = gin.New()
 
 // Start launches the HTTP server. This method will not return until the server
 // is shutdown.
 func Start() {
 	port := viper.GetString("port")
-	env := viper.GetString("env")
-
-	gin.SetMode(env)
 
 	listenString := fmt.Sprintf(":%v", port)
 
+	router.Use(gin.Recovery())
 	addCORSHandler()
 	add404Handler()
 
@@ -55,7 +53,7 @@ func add404Handler() {
 	router.NoRoute(func(c *gin.Context) {
 		path := c.Request.URL.Path
 		if strings.HasPrefix(path, "/api") {
-			c.JSON(404, map[string]interface{}{"Error": "API Endpoint not found"})
+			c.JSON(404, map[string]interface{}{"error": "API endpoint not found"})
 		} else {
 			c.String(404, "404 not found")
 		}

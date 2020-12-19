@@ -12,3 +12,5 @@ dist/
 
 server/api/a_api-packr.go
 .vscode
+
+rice-box.go

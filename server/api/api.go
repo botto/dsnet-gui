@@ -3,24 +3,22 @@ package api
 import (
 	"net/http"
 
+	rice "github.com/GeertJohan/go.rice"
 	reportapi "github.com/botto/dsnet-gui/server/api/report"
 	"github.com/gin-gonic/gin"
-	"github.com/gobuffalo/packr"
 )
 
 // Routes all the gin routes
 func Routes(router *gin.Engine) {
-
-	clientBox := packr.NewBox("../../client/build")
+	box := rice.MustFindBox("client/build")
 
 	// Serve frontend static files
-	router.StaticFS("/client/", clientBox)
+	router.StaticFS("/client", box.HTTPBox())
 
 	router.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusPermanentRedirect, "/client")
 	})
 
 	apiGroup := router.Group("/api/v1")
-
 	reportapi.Routes(apiGroup.Group("report"))
 }
