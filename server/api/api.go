@@ -10,14 +10,16 @@ import (
 
 // Routes all the gin routes
 func Routes(router *gin.Engine) {
-	box := rice.MustFindBox("client/build")
+	box, err := rice.FindBox("client/build")
 
-	// Serve frontend static files
-	router.StaticFS("/client", box.HTTPBox())
+	if err == nil {
+		// Serve frontend static files
+		router.StaticFS("/client", box.HTTPBox())
 
-	router.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusPermanentRedirect, "/client")
-	})
+		router.GET("/", func(c *gin.Context) {
+			c.Redirect(http.StatusPermanentRedirect, "/client")
+		})
+	}
 
 	apiGroup := router.Group("/api/v1")
 	reportapi.Routes(apiGroup.Group("report"))
