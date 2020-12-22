@@ -1,17 +1,14 @@
-import React, { useState } from 'react';
 import { Card } from '@blueprintjs/core';
 import sortBy from 'lodash/sortBy';
-
-import PeerComp from '../Peer';
-import WGNicComp from '../WGNic';
-import TrafficCharts from '../TrafficCharts';
-
-import { usePeriodic } from '../../lib/hook-periodic';
+import React, { useState } from 'react';
 import { getReport } from '../../api';
-import ReportPeer from '../../models/report_peer';
+import { usePeriodic } from '../../lib/hook-periodic';
 import DSNetReport from '../../models/dsnet_report';
+import ReportPeer from '../../models/report_peer';
 import TimeSeries from '../../models/time_series';
-
+import PeerComp from '../Peer';
+import TrafficCharts from '../TrafficCharts';
+import WGNicComp from '../WGNic';
 import styles from './styles.module.sass';
 
 const Overview = React.memo(() => {

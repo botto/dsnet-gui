@@ -1,8 +1,8 @@
 
-import rawReq from './rawReq';
 import DSNetReport from '../models/dsnet_report';
 import TimeSeries from '../models/time_series';
 import TimeSeriesResponse from '../models/time_series_response';
+import rawReq from './rawReq';
 enum GetEndpoint {
   report = 'report'
 }
