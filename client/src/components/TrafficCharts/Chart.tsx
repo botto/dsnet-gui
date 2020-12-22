@@ -1,11 +1,11 @@
-import React, { useRef, useEffect } from 'react';
 import Chart from 'chart.js';
-import MooColor from 'moo-color';
-import times from 'lodash/times';
 import filesize from 'filesize';
+import { isArray, isNumber } from 'lodash';
+import times from 'lodash/times';
+import MooColor from 'moo-color';
+import React, { useEffect, useRef } from 'react';
 import DataPoint from '../../models/data_point';
 import styles from './styles.module.sass';
-import { isNumber, isArray } from 'lodash';
 
 export interface ChartDataPoint {
   y: number;
@@ -127,14 +127,14 @@ const ChartComp = React.memo((props: ChartProps) => {
         // Make a copy of the lineColor, it gets mutated by the later steps.
         const gradientBaseColor = lineColor.current.clone();
         times(3, (i: number) => {
-          gradient.addColorStop(i * 0.5, gradientBaseColor.rotate(i * 2).darken(i * 20).setAlpha(0.4).toRgb());
+          gradient.addColorStop(i * 0.5, gradientBaseColor.rotate(i * 2).darken(i * 5).setAlpha(0.2).toRgb());
         });
         chartRef.current = initChart(
           ctx,
           [],
-          pointColor.toRgb(),
+          pointColor.lighten(5).whiten(5).toRgb(),
           gradient,
-          lineColor.current.clone().toRgb(),
+          lineColor.current.clone().lighten(10).toRgb(),
         );
       }
     }
