@@ -1,4 +1,4 @@
-dsnet-gui is a web based gui for [dsnet](https://github.com/naggie)
+# dsnet-gui
 
 ![screenshot of gui](../assets/screenshot.png)
 
@@ -10,7 +10,7 @@ Open your browser to `http://127.0.0.1:20080`
 
 This is an initial prototype for a more complex management  interface that will let you control/manage your whole dsnet network
 
-### Dev
+## Dev
 
 dsnet-gui is split in to 2 parts:
 
