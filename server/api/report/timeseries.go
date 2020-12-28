@@ -1,4 +1,4 @@
-package reportapi
+package report
 
 import (
 	"container/ring"
