@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	rice "github.com/GeertJohan/go.rice"
+	"github.com/botto/dsnet-gui/server/api/peer"
 	"github.com/botto/dsnet-gui/server/api/report"
-	"github.com/botto/dsnet-gui/server/api/user"
 	"github.com/gin-gonic/gin"
 	"github.com/naggie/dsnet"
 	"golang.zx2c4.com/wireguard/wgctrl"
@@ -43,5 +43,5 @@ func Routes(router *gin.Engine) {
 
 	apiGroup := router.Group("/api/v1")
 	report.Routes(apiGroup.Group("report"), conf)
-	user.Routes(apiGroup.Group("user"), conf)
+	peer.Routes(apiGroup.Group("peer"), conf)
 }

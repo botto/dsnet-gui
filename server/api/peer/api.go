@@ -1,4 +1,4 @@
-package user
+package peer
 
 import (
 	"fmt"
@@ -13,11 +13,11 @@ var conf *dsnet.DsnetConfig
 // Routes sets up endpoints for peers.
 func Routes(router *gin.RouterGroup, dsConf *dsnet.DsnetConfig) {
 	conf = dsConf
-	router.POST("", handleNewUser)
+	router.POST("", handleNewPeer)
 }
 
-func handleNewUser(c *gin.Context) {
-	peer, err := addNewUser(c)
+func handleNewPeer(c *gin.Context) {
+	peer, err := addNewPeer(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": err,

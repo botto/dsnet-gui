@@ -1,4 +1,4 @@
-package user
+package peer
 
 import (
 	"time"
@@ -13,7 +13,7 @@ type addUserParams struct {
 	Description string
 }
 
-func addNewUser(c *gin.Context) (*dsnet.PeerConfig, error) {
+func addNewPeer(c *gin.Context) (*dsnet.PeerConfig, error) {
 	var newUser addUserParams
 	if err := c.BindJSON(&newUser); err != nil {
 		return nil, err
