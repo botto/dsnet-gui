@@ -6,6 +6,7 @@ import { usePeriodic } from '../../lib/hook-periodic';
 import DSNetReport from '../../models/dsnet_report';
 import ReportPeer from '../../models/report_peer';
 import TimeSeries from '../../models/time_series';
+import AddPeer from '../AddPeer';
 import PeerComp from '../Peer';
 import TrafficCharts from '../TrafficCharts';
 import WGNicComp from '../WGNic';
@@ -45,7 +46,10 @@ const Content = React.memo((props: { report: DSNetReport, timeSeries: TimeSeries
       <TrafficCharts timeSeries={ props.timeSeries }/>
     </Card>
     <div className={ styles.PeerList }>
-      <PeerList  peers={ props.report.Peers } />
+      <PeerList peers={ props.report.Peers } />
+      <Card className={ styles.Peer } key="add_new">
+        <AddPeer />
+      </Card>
     </div>
   </div>
 ));
