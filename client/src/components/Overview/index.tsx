@@ -20,10 +20,15 @@ const Overview = React.memo(() => {
   });
 
   usePeriodic(async () => {
-    const newData = await getReport();
-    if (newData) {
-      setReport(newData.Report);
-      setTimeSeries(newData.TimeSeries);
+    try {
+      const newData = await getReport();
+      if (newData) {
+        setReport(newData.Report);
+        setTimeSeries(newData.TimeSeries);
+      }
+    }
+    catch (err) {
+      console.error(`Failed to get report data: ${err}`);
     }
   }, 1000);
   
