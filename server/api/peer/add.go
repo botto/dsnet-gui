@@ -41,8 +41,17 @@ func addNewPeer(c *gin.Context) (*dsnet.PeerConfig, error) {
 		peer.IP6 = conf.MustAllocateIP6()
 	}
 
-	conf.MustAddPeer(peer)
-	conf.MustSave()
-	dsnet.ConfigureDevice(conf)
+	if err := conf.AddPeer(peer); err != nil {
+		return nil, err
+	}
+
+	if err := conf.Save(); err != nil {
+		return nil, err
+	}
+
+	if err := dsnet.ConfigureDevice(conf); err != nil {
+		return nil, err
+	}
+
 	return &peer, nil
 }
