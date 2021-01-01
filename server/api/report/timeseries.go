@@ -2,7 +2,7 @@ package report
 
 import (
 	"container/ring"
-	"fmt"
+	"log"
 	"sync"
 	"time"
 
@@ -54,13 +54,13 @@ func updateTimeSeriesData() {
 	defer timeSeriesLock.Unlock()
 	wg, err := wgctrl.New()
 	if err != nil {
-		fmt.Print(err)
+		log.Println(err)
 		return
 	}
 	defer wg.Close()
 	dev, err := wg.Device(conf.InterfaceName)
 	if err != nil {
-		fmt.Print(err)
+		log.Println(err)
 		return
 	}
 	newData := dsnet.GenerateReport(dev, conf, nil)
