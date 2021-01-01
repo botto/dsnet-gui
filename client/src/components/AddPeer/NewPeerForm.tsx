@@ -1,5 +1,5 @@
 import { Button, Card, Classes, Intent, Label } from '@blueprintjs/core';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { postAddPeer } from '../../api';
 import Peer from '../../models/peer';
 import { TopToast } from '../Toast';
@@ -8,17 +8,18 @@ const NewPeerForm = (props: { done: (conf: string) => void }) => {
   const owner = useRef<HTMLInputElement>(null);
   const hostname = useRef<HTMLInputElement>(null);
   const description = useRef<HTMLInputElement>(null);
+  const [topToastId, setTopTostId] = useState('');
 
   const submitForm = async () => {
     if (owner.current == null
       || hostname.current == null 
       || description.current == null)
     {
-      TopToast.show({
+      setTopTostId(TopToast.show({
         message: 'Some fields are missing',
         intent: Intent.DANGER,
         timeout: 2000,
-      });
+      }));
       return;
     }
     const newPeer = new Peer(
@@ -29,14 +30,16 @@ const NewPeerForm = (props: { done: (conf: string) => void }) => {
 
     try {
       const resp = await postAddPeer(newPeer);
+      TopToast.dismiss(topToastId);
+      setTopTostId('');
       props.done(resp.Conf);
     }
     catch (err) {
-      TopToast.show({
+      setTopTostId(TopToast.show({
         message: `There was a problem adding the new peer: ${err}`,
         intent: Intent.DANGER,
-        timeout: 10000,
-      });
+        timeout: 7000,
+      }));
     }
   }
 
