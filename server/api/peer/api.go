@@ -20,7 +20,7 @@ func handleNewPeer(c *gin.Context) {
 	peer, err := addNewPeer(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Error": err,
+			"Error": err.Error(),
 		})
 		return
 	}
