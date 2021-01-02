@@ -15,7 +15,7 @@ require (
 	github.com/mdlayher/netlink v1.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.4.0 // indirect
-	github.com/naggie/dsnet v0.2.3-0.20201228194529-6f4bc813016e
+	github.com/naggie/dsnet v0.2.3-0.20210102155054-dc1c3853870c
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/spf13/afero v1.5.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
@@ -24,10 +24,10 @@ require (
 	github.com/spf13/viper v1.7.1
 	github.com/ugorji/go v1.2.2 // indirect
 	github.com/vishvananda/netlink v1.1.0 // indirect
-	github.com/vishvananda/netns v0.0.0-20200728191858-db3c7e526aae // indirect
+	github.com/vishvananda/netns v0.0.0-20201230012202-c4f3ca719c73 // indirect
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
-	golang.org/x/sys v0.0.0-20201223074533-0d417f636930 // indirect
+	golang.org/x/sys v0.0.0-20201231184435-2d18734c6014 // indirect
 	golang.org/x/text v0.3.4 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	golang.zx2c4.com/wireguard v0.0.20201118 // indirect
@@ -36,5 +36,3 @@ require (
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-replace github.com/naggie/dsnet => github.com/botto/dsnet v0.0.0-20210101143023-2284ae28b7ec
