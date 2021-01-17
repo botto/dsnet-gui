@@ -7,15 +7,13 @@ import (
 	"github.com/naggie/dsnet"
 )
 
-type addUserParams struct {
-	Owner       string
-	Hostname    string
-	Description string
-}
-
 func addNewPeer(c *gin.Context) (*dsnet.PeerConfig, error) {
-	var newUser addUserParams
-	if err := c.BindJSON(&newUser); err != nil {
+	var newPeer struct {
+		Owner       string
+		Hostname    string
+		Description string
+	}
+	if err := c.BindJSON(&newPeer); err != nil {
 		return nil, err
 	}
 
@@ -23,9 +21,9 @@ func addNewPeer(c *gin.Context) (*dsnet.PeerConfig, error) {
 	publicKey := privateKey.PublicKey()
 
 	peer := dsnet.PeerConfig{
-		Owner:        newUser.Owner,
-		Hostname:     newUser.Hostname,
-		Description:  newUser.Description,
+		Owner:        newPeer.Owner,
+		Hostname:     newPeer.Hostname,
+		Description:  newPeer.Description,
 		Added:        time.Now(),
 		PublicKey:    publicKey,
 		PrivateKey:   privateKey, // omitted from server config JSON!
