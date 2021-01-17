@@ -14,6 +14,7 @@ var conf *dsnet.DsnetConfig
 func Routes(router *gin.RouterGroup, dsConf *dsnet.DsnetConfig) {
 	conf = dsConf
 	router.POST("", handleNewPeer)
+	router.DELETE("/:hostname", handleRemovePeer)
 }
 
 func handleNewPeer(c *gin.Context) {
@@ -28,11 +29,24 @@ func handleNewPeer(c *gin.Context) {
 	peerConf, err := dsnet.GetWGPeerTemplate(dsnet.WGQuick, peer, conf)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Error": fmt.Sprintf("could not get wg template: %s", err),
+			"Error": fmt.Sprintf("could not get wg template: %s", err.Error()),
 		})
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"Conf": peerConf.String(),
 	})
+}
+
+func handleRemovePeer(c *gin.Context) {
+	hostName := c.Param("hostname")
+
+	err := conf.RemovePeer(hostName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"Error": fmt.Sprintf("could not remove peer: %s", err.Error()),
+		})
+		return
+	}
+	c.Status(http.StatusNoContent)
 }
