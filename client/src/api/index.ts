@@ -14,7 +14,8 @@ enum GetEndpoint {
 }
 
 enum PostEndpoint {
-  addPeer = 'peer'
+enum DeleteEndpoint {
+  deletePeer = 'peer'
 }
 
 type ResponseTypes<E> =
@@ -55,8 +56,26 @@ const doPost = async <R extends PostEndpoint>(endpoint: R, payLoad: PayloadType<
   const respData = await resp.json();
   if (resp.status >= 200 && resp.status < 300) {
     return respData as ResponseTypes<R>;
+  } else {
+    const errData = respData as ErrorResponse;
+    if (errData.Error !== '') {
+      throw new Error(errData.Error);
   }
   else {
+      throw new Error('Unknown error');
+    }
+  }
+};
+
+const doDelete = async<R extends DeleteEndpoint>(endpoint: R, id?: String): Promise<boolean> => {
+  const url = `${endpoint}/${id}`
+  const resp = await rawReq(url, {
+    method: 'DELETE',
+  });
+  if (resp.status >= 200 && resp.status < 300) {
+    return true
+  } else {
+    const respData = await resp.json();
     const errData = respData as ErrorResponse;
     if (errData.Error !== '') {
       throw new Error(errData.Error);
@@ -84,9 +103,13 @@ const postAddPeer = async (newPeer: Peer): Promise<AddPeerResponse> => {
   };
   const data = await doPost(PostEndpoint.addPeer, payload);
   return { Conf: data.Conf };
-}
+};
+
+const deletePeer = (hostname: String) =>
+  doDelete(DeleteEndpoint.deletePeer, hostname);
 
 export {
   getReport,
-  postAddPeer
+  postAddPeer,
+  deletePeer,
 };
