@@ -41,7 +41,7 @@ const initChart = (
       },
       tooltips: {
         callbacks: {
-          label: (toolTipItem, data) => {
+          label: (toolTipItem: Chart.ChartTooltipItem, data: Chart.ChartData) => {
             if (data && data.datasets) {
               const setIndex = toolTipItem.datasetIndex || 0;
               const dataSet = data.datasets[setIndex];
@@ -50,7 +50,7 @@ const initChart = (
                 const rate = dataSet.data[dataIndex];
                 if (rate && !isNumber(rate) && !isArray(rate) && rate.y) {
                   const y = rate.y as number;
-                  return `${filesize(y, { bits: true, fullform: true })}/s`;
+                  return `${filesize(y, { bits: true, fullform: false })}/s`;
                 }
               }
             }
@@ -61,14 +61,16 @@ const initChart = (
       scales: {
         yAxes: [
           {
+            type: 'linear',
             gridLines: {
               color: '#293742',
             },
             ticks: {
               fontColor: '#8a9Ba8',
-              beginAtZero: false,
+              fontSize: 15,
+              beginAtZero: true,
               callback: (value: number) => {
-                return `${filesize(value, { bits: true, fullform: true })}/s`;
+                return `${filesize(value, { base: 10, bits: true, fullform: false }) }/s`;
               },
             },
           },
