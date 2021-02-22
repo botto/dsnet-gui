@@ -14,6 +14,9 @@ enum GetEndpoint {
 }
 
 enum PostEndpoint {
+  addPeer = 'peer'
+}
+
 enum DeleteEndpoint {
   deletePeer = 'peer'
 }
