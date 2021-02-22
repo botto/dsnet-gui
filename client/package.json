@@ -19,7 +19,7 @@
     "filesize": "^6.1.0",
     "lodash": "^4.17.19",
     "moo-color": "^1.0.2",
-    "node-sass": "4",
+    "node-sass": "5",
     "react": "17",
     "react-chartjs-2": "^2.9.0",
     "react-dom": "^17.0.1",
