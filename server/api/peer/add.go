@@ -3,20 +3,10 @@ package peer
 import (
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/naggie/dsnet"
 )
 
-func addNewPeer(c *gin.Context) (*dsnet.PeerConfig, error) {
-	var newPeer struct {
-		Owner       string
-		Hostname    string
-		Description string
-	}
-	if err := c.BindJSON(&newPeer); err != nil {
-		return nil, err
-	}
-
+func addNewPeer(newPeer peer) (*dsnet.PeerConfig, error) {
 	privateKey := dsnet.GenerateJSONPrivateKey()
 	publicKey := privateKey.PublicKey()
 

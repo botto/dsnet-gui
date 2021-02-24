@@ -4,11 +4,18 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/botto/dsnet-gui/server/auth"
 	"github.com/gin-gonic/gin"
 	"github.com/naggie/dsnet"
 )
 
 var conf *dsnet.DsnetConfig
+
+type peer struct {
+	Owner       string `json:",omitempty"`
+	Hostname    string
+	Description string
+}
 
 // Routes sets up endpoints for peers.
 func Routes(router *gin.RouterGroup, dsConf *dsnet.DsnetConfig) {
@@ -18,7 +25,42 @@ func Routes(router *gin.RouterGroup, dsConf *dsnet.DsnetConfig) {
 }
 
 func handleNewPeer(c *gin.Context) {
-	peer, err := addNewPeer(c)
+	var newPeerData peer
+	var auth auth.Headers
+
+	if err := c.BindJSON(&newPeerData); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"Error": err,
+		})
+		return
+	}
+
+	// Grab auth headers
+	c.ShouldBindHeader(&auth)
+
+	// Override user field if set
+	if auth.User != "" {
+		newPeerData.Owner = auth.User
+	}
+  
+  if newPeerData.Owner == "" {
+    c.JSON(http.StatusForbidden, gin.H{
+      "Error": "missing Owner field",
+    })
+    return
+  }
+
+  if auth.MaxPeers != 0 {
+		peerCount := conf.GetOwnerPeerCount(newPeerData.Owner)
+		if peerCount >= auth.MaxPeers {
+			c.JSON(http.StatusForbidden, gin.H{
+				"Error": "user has exceeded allowed number of peers",
+      })
+      return
+		}
+  }
+
+	peer, err := addNewPeer(newPeerData)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": err.Error(),
