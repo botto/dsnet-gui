@@ -66,9 +66,11 @@ const initChart = (
               color: '#293742',
             },
             ticks: {
-              fontColor: '#8a9Ba8',
-              fontSize: 15,
+              fontColor: '#F5F8FA',
+              fontSize: 20,
               beginAtZero: true,
+              suggestedMax: 61000,
+              maxTicksLimit: 5,
               callback: (value: number) => {
                 return `${filesize(value, { base: 10, bits: true, fullform: false }) }/s`;
               },
