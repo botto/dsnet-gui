@@ -21,7 +21,7 @@ const LastHandshake = React.memo((props: Props) => {
   if (props.peer.LastHandshakeTime && props.peer.LastHandshakeTime.length > 0) {
     return (
       <div className={ styles.LastHandshakeTime }>
-        <Icon icon='eye-open' className={ styles.PeerDetailIcon } />
+        <Icon icon='eye-open' className={ styles.PeerDetailIcon } iconSize={20} />
         <TimeStamp peer={ props.peer } />
       </div>
     );
@@ -37,7 +37,7 @@ const DeleteButton = React.memo((props: Props) => {
         icon="cross"
         large={ true }
         onClick={ doDelete }
-        outlined={ true }
+        outlined={ false }
         className={ styles.Button }
         intent="danger"
       />
@@ -53,8 +53,8 @@ const PeerComp = React.memo((props: Props) => (
         <div className={ styles.Hostname }><Text>{ props.peer.Hostname }</Text></div>
       </div>
       <div className={ styles.Bottom }>
-        <div className={ styles.Owner }><Icon icon='person' className={ styles.PeerDetailIcon } /><Text>{ props.peer.Owner }</Text></div>
-        <div className={ styles.IP }><Icon icon='ip-address' className={ styles.PeerDetailIcon } /><Text>{ props.peer.IP }</Text></div>
+        <div className={ styles.Owner }><Icon icon='person' className={ styles.PeerDetailIcon } iconSize={20} /><Text>{ props.peer.Owner }</Text></div>
+        <div className={ styles.IP }><Icon icon='ip-address' className={ styles.PeerDetailIcon } iconSize={20} /><Text>{ props.peer.IP }</Text></div>
         <LastHandshake peer={ props.peer } />
       </div>
     </div>
