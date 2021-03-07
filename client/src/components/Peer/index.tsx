@@ -1,7 +1,8 @@
 import { Button, Icon, Text } from '@blueprintjs/core';
 import DayJS from 'dayjs';
 import React from 'react';
-import { deletePeer } from '../../api';
+import { useMutation, useQueryClient } from 'react-query';
+import { api } from '../../api';
 import ReportPeer from '../../models/report_peer';
 import styles from './styles.module.sass';
 
@@ -30,7 +31,11 @@ const LastHandshake = React.memo((props: Props) => {
 });
 
 const DeleteButton = React.memo((props: Props) => {
-  const doDelete = () => deletePeer(props.peer.Hostname);
+  const queryClient = useQueryClient();
+  const deleteMutate = useMutation(api.deletePeer, {
+    onSuccess: () => { queryClient.invalidateQueries('report'); },
+  });
+  const doDelete = () => deleteMutate.mutate(props.peer.Hostname);
   return (
     <div className={ styles.Delete }>
       <Button

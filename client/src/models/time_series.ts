@@ -1,7 +1,13 @@
 import DataPoint from './data_point';
-import TimeSeriesResponse from './time_series_response';
-
-class TimeSeries {
+interface TimeSeriesData { 
+  TimeStamp: string,
+  Bytes: number,
+}
+export interface TimeSeriesResponse {
+  RX: TimeSeriesData[];
+  TX: TimeSeriesData[];
+}
+export default class TimeSeries {
   readonly RX: DataPoint[];
   readonly TX: DataPoint[];
   constructor(timeSeries: TimeSeriesResponse) {
@@ -9,5 +15,3 @@ class TimeSeries {
     this.TX = timeSeries.TX.map(tsData => new DataPoint(tsData.TimeStamp, tsData.Bytes));
   }
 }
-
-export default TimeSeries;

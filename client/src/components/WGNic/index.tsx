@@ -1,8 +1,8 @@
+import { Icon, Text } from '@blueprintjs/core';
 import React from 'react';
-import { Text, Icon } from '@blueprintjs/core';
-import ReportData from '../../models/dsnet_report';
-
+import ReportData from '../../models/report';
 import styles from './styles.module.sass';
+
 
 const WGNicComp = React.memo((props: { report : ReportData}) => (
   <div className={styles.WGNic}>

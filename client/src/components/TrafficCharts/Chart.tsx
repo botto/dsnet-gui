@@ -124,7 +124,6 @@ const ChartComp = React.memo((props: ChartProps) => {
   useEffect(() => {
     if (canvasRef.current) {
       const pointColor = lineColor.current.clone().darken(10);
-
       const ctx = canvasRef.current.getContext('2d');
       if (ctx) {
         const gradient = ctx.createLinearGradient(0,0,0,400);

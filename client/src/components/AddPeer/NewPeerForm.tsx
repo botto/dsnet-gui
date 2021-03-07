@@ -1,10 +1,16 @@
 import { Button, Card, Classes, Intent, Label } from '@blueprintjs/core';
 import React, { useRef, useState } from 'react';
-import { postAddPeer } from '../../api';
+import { useMutation, useQueryClient } from 'react-query';
+import { api } from '../../api';
 import Peer from '../../models/peer';
 import { TopToast } from '../Toast';
 
 const NewPeerForm = (props: { done: (conf: string) => void }) => {
+  const queryClient = useQueryClient();
+
+  const addPeerMutation = useMutation(api.addPeer, {
+    onSuccess: () => { queryClient.invalidateQueries('report'); }
+  });
   const owner = useRef<HTMLInputElement>(null);
   const hostname = useRef<HTMLInputElement>(null);
   const description = useRef<HTMLInputElement>(null);
@@ -29,10 +35,10 @@ const NewPeerForm = (props: { done: (conf: string) => void }) => {
     );
 
     try {
-      const resp = await postAddPeer(newPeer);
+      const newPeerConf = await addPeerMutation.mutateAsync(newPeer);
       TopToast.dismiss(topToastId);
       setTopTostId('');
-      props.done(resp.Conf);
+      props.done(newPeerConf);
     }
     catch (err) {
       setTopTostId(TopToast.show({

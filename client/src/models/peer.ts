@@ -3,10 +3,10 @@ class Peer {
   readonly Hostname   : string;
   readonly Owner      : string;
   readonly Description: string;
-  readonly IP         : string | undefined;
-  readonly Added      : string | undefined;
-  readonly Networks   : string[] | undefined;
-  readonly PublicKey  : string | undefined;
+  readonly IP?         : string | undefined;
+  readonly Added?      : string | undefined;
+  readonly Networks?   : string[] | undefined;
+  readonly PublicKey?  : string | undefined;
   constructor(
     hostName: string,
     owner: string,

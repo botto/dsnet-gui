@@ -1,5 +1,4 @@
 import ReportPeer from './report_peer';
-
 interface DSNetReport {
   ExternalIP   : string;
   InterfaceName: string;

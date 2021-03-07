@@ -1,9 +1,9 @@
 import { Card } from '@blueprintjs/core';
 import sortBy from 'lodash/sortBy';
-import React, { useState } from 'react';
-import { getReport } from '../../api';
-import { usePeriodic } from '../../lib/hook-periodic';
-import DSNetReport from '../../models/dsnet_report';
+import React, { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
+import { api } from '../../api';
+import Report from '../../models/report';
 import ReportPeer from '../../models/report_peer';
 import TimeSeries from '../../models/time_series';
 import AddPeer from '../AddPeer';
@@ -13,28 +13,38 @@ import WGNicComp from '../WGNic';
 import styles from './styles.module.sass';
 
 const Overview = React.memo(() => {
-  const [ report, setReport ] = useState<DSNetReport>();
+  const [ report, setReport ] = useState<Report>();
   const [ timeSeries, setTimeSeries ] = useState<TimeSeries>({
     RX: [],
     TX: [],
   });
 
-  usePeriodic(async () => {
-    try {
-      const newData = await getReport();
-      if (newData) {
-        setReport(newData.Report);
-        setTimeSeries(newData.TimeSeries);
-      }
+  const { isLoading, error, data } = useQuery(
+    'report',
+    api.getReport,
+    {
+      refetchInterval: 2000,
+      refetchIntervalInBackground: true
     }
-    catch (err) {
-      console.error(`Failed to get report data: ${err}`);
+  );
+
+  useEffect(() => {
+    if (data) {
+      setReport(data.Report);
+      setTimeSeries(data.TimeSeries);
     }
-  }, 1000);
-  
+  }, [ data ]);
+
+  if (isLoading) return (<div>Loading...</div>);
+
+  if (error) {
+    console.error(error);
+    return (<div>There was a problem retrieving data</div>);
+  }
+
   const content = report ?
-      <Content report={ report } timeSeries={ timeSeries } /> :
-      <Empty />;
+    <Content report={ report } timeSeries={ timeSeries } /> :
+    <Empty />;
 
   return content;
 });
@@ -42,13 +52,13 @@ const Overview = React.memo(() => {
 
 const Empty = () => <>No interfaces available yet</>;
 
-const Content = React.memo((props: { report: DSNetReport, timeSeries: TimeSeries }) => (
+const Content = React.memo((props: { report: Report, timeSeries: TimeSeries }) => (
   <div className={ styles.Overview }>
     <Card>
       <WGNicComp report={ props.report } />
     </Card>
     <Card className={ styles.Charts }>
-      <TrafficCharts timeSeries={ props.timeSeries }/>
+      <TrafficCharts timeSeries={ props.timeSeries } />
     </Card>
     <div className={ styles.PeerList }>
       <PeerList peers={ props.report.Peers } />
@@ -59,10 +69,10 @@ const Content = React.memo((props: { report: DSNetReport, timeSeries: TimeSeries
   </div>
 ));
 
-const PeerList = React.memo((props: { peers: ReportPeer[] }) => 
+const PeerList = React.memo((props: { peers: ReportPeer[] }) =>
   <>
-    { sortBy(props.peers, 'Hostname').map((p, i) => 
-      <Card className={ styles.Peer } key={i}>
+    { sortBy(props.peers, 'Hostname').map((p, i) =>
+      <Card className={ styles.Peer } key={ i }>
         <PeerComp peer={ p } />
       </Card>
     ) }

@@ -1,118 +1,32 @@
-
 import Peer from '../models/peer';
 import TimeSeries from '../models/time_series';
-import rawReq from './rawReq';
-import {
-  AddPeerResponse,
-  ErrorResponse,
-  NewPeerPayload,
-  ReportResponse
-} from './types';
+import HttpClient from './HttpClient';
+import { AddPeerResponse, OverviewReport, ReportResponse } from './types';
 
-enum GetEndpoint {
-  report = 'report'
-}
-
-enum PostEndpoint {
-  addPeer = 'peer'
-}
-
-enum DeleteEndpoint {
-  deletePeer = 'peer'
-}
-
-type ResponseTypes<E> =
-  E extends GetEndpoint.report ? ReportResponse :
-  E extends PostEndpoint.addPeer ? AddPeerResponse :
-  never;
-
-type PayloadType<E> =
-  E extends PostEndpoint.addPeer ? NewPeerPayload :
-  never;
-
-
-const doGet = async <R extends GetEndpoint>(endpoint: R): Promise<ResponseTypes<R>> => {
-  const resp = await rawReq(endpoint);
-  const respData = await resp.json()
-  if (resp.status >= 200 && resp.status < 300) {
-    return respData as ResponseTypes<R>
+class API extends HttpClient {
+  public constructor() {
+    super(process.env.REACT_APP_API_BASE_URL);
   }
-  else {
-    const errData = respData as ErrorResponse;
-    if (errData.Error !== '') {
-      throw new Error(errData.Error);
-    }
-    else {
-      throw new Error('Unknown error');
-    }
-  }
-};
 
-const doPost = async <R extends PostEndpoint>(endpoint: R, payLoad: PayloadType<R>): Promise<ResponseTypes<R>> => {
-  const resp = await rawReq(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payLoad),
-  });
-  const respData = await resp.json();
-  if (resp.status >= 200 && resp.status < 300) {
-    return respData as ResponseTypes<R>;
-  } else {
-    const errData = respData as ErrorResponse;
-    if (errData.Error !== '') {
-      throw new Error(errData.Error);
-  }
-  else {
-      throw new Error('Unknown error');
-    }
-  }
-};
-
-const doDelete = async<R extends DeleteEndpoint>(endpoint: R, id?: String): Promise<boolean> => {
-  const url = `${endpoint}/${id}`
-  const resp = await rawReq(url, {
-    method: 'DELETE',
-  });
-  if (resp.status >= 200 && resp.status < 300) {
-    return true
-  } else {
-    const respData = await resp.json();
-    const errData = respData as ErrorResponse;
-    if (errData.Error !== '') {
-      throw new Error(errData.Error);
-    }
-    else {
-      throw new Error('Unknown error');
-    }
-  }
-};
-
-/***** GET Endpoints *****/
-const getReport = async () => {
-  const data = await doGet(GetEndpoint.report);
-  return {
-    TimeSeries: new TimeSeries(data.TimeSeries),
-    Report: data.Report,
+  public getReport = async () => {
+    const resp = await this.instance.get<ReportResponse>('/report');
+    return {
+      Report: resp.Report,
+      TimeSeries: new TimeSeries(resp.TimeSeries),
+    } as OverviewReport;
   };
-}
 
-const postAddPeer = async (newPeer: Peer): Promise<AddPeerResponse> => {
-  const payload: NewPeerPayload = {
-    Owner: newPeer.Owner,
-    Hostname: newPeer.Hostname,
-    Description: newPeer.Description,
+  public addPeer = async (newPeer: Peer): Promise<string> => {
+    const payload: Peer = {
+      Owner: newPeer.Owner,
+      Hostname: newPeer.Hostname,
+      Description: newPeer.Description,
+    };
+    const resp = await this.instance.post<AddPeerResponse>('/peer', payload);
+    return resp.Conf;
   };
-  const data = await doPost(PostEndpoint.addPeer, payload);
-  return { Conf: data.Conf };
+
+  public deletePeer = async (hostname: string) => this.instance.delete(`/peer/${hostname}`);
 };
 
-const deletePeer = (hostname: String) =>
-  doDelete(DeleteEndpoint.deletePeer, hostname);
-
-export {
-  getReport,
-  postAddPeer,
-  deletePeer,
-};
+export const api = new API();
