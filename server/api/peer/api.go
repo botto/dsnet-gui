@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/botto/dsnet-gui/server/auth"
+	"github.com/botto/dsnet-gui/server/util"
 	"github.com/gin-gonic/gin"
 	"github.com/naggie/dsnet"
 )
@@ -42,23 +43,23 @@ func handleNewPeer(c *gin.Context) {
 	if auth.User != "" {
 		newPeerData.Owner = auth.User
 	}
-  
-  if newPeerData.Owner == "" {
-    c.JSON(http.StatusForbidden, gin.H{
-      "Error": "missing Owner field",
-    })
-    return
-  }
 
-  if auth.MaxPeers != 0 {
-		peerCount := conf.GetOwnerPeerCount(newPeerData.Owner)
+	if newPeerData.Owner == "" {
+		c.JSON(http.StatusForbidden, gin.H{
+			"Error": "missing Owner field",
+		})
+		return
+	}
+
+	if auth.MaxPeers != 0 {
+		peerCount := util.GetOwnerPeerCount(conf, newPeerData.Owner)
 		if peerCount >= auth.MaxPeers {
 			c.JSON(http.StatusForbidden, gin.H{
 				"Error": "user has exceeded allowed number of peers",
-      })
-      return
+			})
+			return
 		}
-  }
+	}
 
 	peer, err := addNewPeer(newPeerData)
 	if err != nil {
