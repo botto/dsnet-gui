@@ -1,6 +1,7 @@
 package peer
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -10,7 +11,7 @@ import (
 	"github.com/naggie/dsnet"
 )
 
-var conf *dsnet.DsnetConfig
+var conf *util.DSConf
 
 type peer struct {
 	Owner       string `json:",omitempty"`
@@ -19,49 +20,17 @@ type peer struct {
 }
 
 // Routes sets up endpoints for peers.
-func Routes(router *gin.RouterGroup, dsConf *dsnet.DsnetConfig) {
+func Routes(router *gin.RouterGroup, dsConf *util.DSConf) {
 	conf = dsConf
-	router.POST("", handleNewPeer)
-	router.DELETE("/:hostname", handleRemovePeer)
+	router.POST("", handleNew)
+	router.DELETE("/:hostname", handleRemove)
+	router.PATCH("", handleUpdate)
 }
 
-func handleNewPeer(c *gin.Context) {
-	var newPeerData peer
-	var auth auth.Headers
-
-	if err := c.BindJSON(&newPeerData); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"Error": err,
-		})
-		return
-	}
-
-	// Grab auth headers
-	c.ShouldBindHeader(&auth)
-
-	// Override user field if set
-	if auth.User != "" {
-		newPeerData.Owner = auth.User
-	}
-
-	if newPeerData.Owner == "" {
-		c.JSON(http.StatusForbidden, gin.H{
-			"Error": "missing Owner field",
-		})
-		return
-	}
-
-	if auth.MaxPeers != 0 {
-		peerCount := util.GetOwnerPeerCount(conf, newPeerData.Owner)
-		if peerCount >= auth.MaxPeers {
-			c.JSON(http.StatusForbidden, gin.H{
-				"Error": "user has exceeded allowed number of peers",
-			})
-			return
-		}
-	}
-
-	peer, err := addNewPeer(newPeerData)
+func handleNew(c *gin.Context) {
+	conf.Lock()
+	defer conf.Unlock()
+	peerData, err := getPeerData(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": err.Error(),
@@ -69,7 +38,15 @@ func handleNewPeer(c *gin.Context) {
 		return
 	}
 
-	peerConf, err := dsnet.GetWGPeerTemplate(dsnet.WGQuick, peer, conf)
+	peer, err := addPeer(peerData)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"Error": err.Error(),
+		})
+		return
+	}
+
+	peerConf, err := dsnet.GetWGPeerTemplate(dsnet.WGQuick, peer, conf.C)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": fmt.Sprintf("could not get wg template: %s", err.Error()),
@@ -81,15 +58,65 @@ func handleNewPeer(c *gin.Context) {
 	})
 }
 
-func handleRemovePeer(c *gin.Context) {
+func handleRemove(c *gin.Context) {
+	conf.Lock()
+	defer conf.Unlock()
 	hostName := c.Param("hostname")
 
-	err := conf.RemovePeer(hostName)
+	err := conf.C.RemovePeer(hostName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": fmt.Sprintf("could not remove peer: %s", err.Error()),
 		})
 		return
 	}
+	conf.C.Save()
 	c.Status(http.StatusNoContent)
+}
+
+func handleUpdate(c *gin.Context) {
+	peerData, err := getPeerData(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"Error": err.Error(),
+		})
+		return
+	}
+
+	err = updatePeer(peerData)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"Error": err.Error(),
+		})
+		return
+	}
+}
+
+func getPeerData(c *gin.Context) (peer, error) {
+	var peerData peer
+	var auth auth.Headers
+
+	if err := c.BindJSON(&peerData); err != nil {
+		return peer{}, err
+	}
+
+	// Grab auth headers
+	c.ShouldBindHeader(&auth)
+
+	// Override user field if set
+	if auth.User != "" {
+		peerData.Owner = auth.User
+	}
+
+	if peerData.Owner == "" {
+		return peer{}, errors.New("missing Owner field")
+	}
+
+	if auth.MaxPeers != 0 {
+		peerCount := util.GetOwnerPeerCount(conf.C, peerData.Owner)
+		if peerCount >= auth.MaxPeers {
+			return peer{}, errors.New("user has exceeded allowed number of peers")
+		}
+	}
+	return peerData, nil
 }

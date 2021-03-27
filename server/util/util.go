@@ -1,6 +1,10 @@
 package util
 
-import "github.com/naggie/dsnet"
+import (
+	"sync"
+
+	"github.com/naggie/dsnet"
+)
 
 // GetOwnerPeerCount returns number of peers an owner has
 func GetOwnerPeerCount(conf *dsnet.DsnetConfig, owner string) int {
@@ -11,4 +15,9 @@ func GetOwnerPeerCount(conf *dsnet.DsnetConfig, owner string) int {
 		}
 	}
 	return peerCount
+}
+
+type DSConf struct {
+	sync.Mutex
+	C *dsnet.DsnetConfig
 }

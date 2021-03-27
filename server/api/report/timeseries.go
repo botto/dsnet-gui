@@ -58,12 +58,12 @@ func updateTimeSeriesData() {
 		return
 	}
 	defer wg.Close()
-	dev, err := wg.Device(conf.InterfaceName)
+	dev, err := wg.Device(conf.C.InterfaceName)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	newData := dsnet.GenerateReport(dev, conf, nil)
+	newData := dsnet.GenerateReport(dev, conf.C, nil)
 
 	timeRing.TX.Value = &DataPoint{
 		TimeStamp: time.Now().Truncate(time.Microsecond).Truncate(time.Second),

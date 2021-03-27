@@ -33,9 +33,9 @@ func getReport() Report {
 	}
 	defer wg.Close()
 
-	dev, err := wg.Device(conf.InterfaceName)
+	dev, err := wg.Device(conf.C.InterfaceName)
 
-	newData := dsnet.GenerateReport(dev, conf, nil)
+	newData := dsnet.GenerateReport(dev, conf.C, nil)
 
 	if timeRing.TX.Len() == 0 || timeRing.RX.Len() == 0 {
 		return Report{&newData, nil}
