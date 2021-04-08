@@ -2,12 +2,9 @@ package report
 
 import (
 	"container/ring"
-	"log"
+	"sort"
 	"sync"
 	"time"
-
-	"github.com/naggie/dsnet"
-	"golang.zx2c4.com/wireguard/wgctrl"
 )
 
 // DataPoint is a single timestamped point
@@ -22,59 +19,56 @@ type TimeData struct {
 	TX *ring.Ring
 }
 
-// SampleRate is how often it will refresh the report data
-const SampleRate = 10 * time.Second
-
 // SampleSize is how many of xmit points we are keeping
 const SampleSize = 10
 
 var timeRing *TimeData
 
-var timeSeriesLock *sync.Mutex = &sync.Mutex{}
+var timeSeriesLock sync.RWMutex
 
-func init() {
-	timeRing = &TimeData{
-		TX: ring.New(SampleSize),
-		RX: ring.New(SampleSize),
-	}
-
-	go func() {
-		// Wait to the next whole minute, makes things neater when sampling
-		waitUntil := time.Duration(60 - time.Now().Second())
-		<-time.After(waitUntil * time.Second)
-		for {
-			updateTimeSeriesData()
-			<-time.After(SampleRate)
-		}
-	}()
-}
-
-func updateTimeSeriesData() {
+func updateDataPoints() {
 	timeSeriesLock.Lock()
 	defer timeSeriesLock.Unlock()
-	wg, err := wgctrl.New()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer wg.Close()
-	dev, err := wg.Device(conf.InterfaceName)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	newData := dsnet.GenerateReport(dev, conf, nil)
+	reportDataLock.RLock()
+	defer reportDataLock.RUnlock()
 
 	timeRing.TX.Value = &DataPoint{
 		TimeStamp: time.Now().Truncate(time.Microsecond).Truncate(time.Second),
-		Bytes:     newData.TransmitBytes,
+		Bytes:     reportData.TransmitBytes,
 	}
 
 	timeRing.RX.Value = &DataPoint{
 		TimeStamp: time.Now().Truncate(time.Microsecond).Truncate(time.Second),
-		Bytes:     newData.ReceiveBytes,
+		Bytes:     reportData.ReceiveBytes,
 	}
 
 	timeRing.TX = timeRing.TX.Next()
 	timeRing.RX = timeRing.RX.Next()
+}
+
+func getTXDataPoints() []*DataPoint {
+	timeSeriesLock.RLock()
+	defer timeSeriesLock.RUnlock()
+	txSeries := make([]*DataPoint, 0, SampleSize)
+	timeRing.TX.Do(func(v interface{}) {
+		if v != nil {
+			txSeries = append(txSeries, v.(*DataPoint))
+		}
+	})
+	sort.Slice(txSeries, func(i, j int) bool { return txSeries[i].TimeStamp.Before(txSeries[j].TimeStamp) })
+	return txSeries
+}
+
+func getRxDataPoints() []*DataPoint {
+	timeSeriesLock.RLock()
+	defer timeSeriesLock.RUnlock()
+	rxSeries := make([]*DataPoint, 0, SampleSize)
+
+	timeRing.RX.Do(func(v interface{}) {
+		if v != nil {
+			rxSeries = append(rxSeries, v.(*DataPoint))
+		}
+	})
+	sort.Slice(rxSeries, func(i, j int) bool { return rxSeries[i].TimeStamp.Before(rxSeries[j].TimeStamp) })
+	return rxSeries
 }
