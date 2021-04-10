@@ -7,12 +7,13 @@ import (
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/botto/dsnet-gui/server/api/peer"
 	"github.com/botto/dsnet-gui/server/api/report"
+	"github.com/botto/dsnet-gui/server/util"
 	"github.com/gin-gonic/gin"
 	"github.com/naggie/dsnet"
 	"golang.zx2c4.com/wireguard/wgctrl"
 )
 
-var conf *dsnet.DsnetConfig
+var conf *util.DSConf
 
 func init() {
 	wg, err := wgctrl.New()
@@ -20,8 +21,10 @@ func init() {
 		log.Panic("could not get wgctrl handler")
 	}
 	defer wg.Close()
-	conf = dsnet.MustLoadDsnetConfig()
-	_, err = wg.Device(conf.InterfaceName)
+	conf = &util.DSConf{
+		C: dsnet.MustLoadDsnetConfig(),
+	}
+	_, err = wg.Device(conf.C.InterfaceName)
 	if err != nil {
 		log.Panicf("could not get device, %s", err)
 		return

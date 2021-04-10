@@ -1,10 +1,10 @@
-import dayjs from "dayjs";
+import moment from 'moment';
 
 class DataPoint {
-  public readonly TimeStamp: dayjs.Dayjs;
+  public readonly TimeStamp: moment.Moment;
   public readonly Bytes: number;
   constructor(timeString: string, bytes: number) {
-    this.TimeStamp = dayjs(timeString);
+    this.TimeStamp = moment(timeString);
     this.Bytes = bytes;
   }
 }

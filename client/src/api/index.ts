@@ -1,3 +1,5 @@
+import { stringify } from 'node:querystring';
+import DataPoint from '../models/data_point';
 import Peer from '../models/peer';
 import TimeSeries from '../models/time_series';
 import HttpClient from './HttpClient';
@@ -12,21 +14,50 @@ class API extends HttpClient {
     const resp = await this.instance.get<ReportResponse>('/report');
     return {
       Report: resp.Report,
-      TimeSeries: new TimeSeries(resp.TimeSeries),
     } as OverviewReport;
   };
 
-  public addPeer = async (newPeer: Peer): Promise<string> => {
-    const payload: Peer = {
-      Owner: newPeer.Owner,
-      Hostname: newPeer.Hostname,
-      Description: newPeer.Description,
+  public getRXTraffic = async () => {
+    type RespDataType = {
+      TimeStamp: string,
+      Bytes: number,
     };
+    const data = await this.instance.get<RespDataType[]>('/report/traffic/rx');
+    if (!data) return;
+    return data.map((d) => new DataPoint(d.TimeStamp, d.Bytes));
+  }
+
+  public getTXTraffic = async () => {
+    type RespDataType = {
+      TimeStamp: string,
+      Bytes: number,
+    };
+    const data = await this.instance.get<RespDataType[]>('/report/traffic/tx');
+    if (!data) return;
+    return data.map((d) => new DataPoint(d.TimeStamp, d.Bytes));
+  }
+
+  public addPeer = async (newPeer: Peer): Promise<string> => {
+    const payload = peerPayload(newPeer);
     const resp = await this.instance.post<AddPeerResponse>('/peer', payload);
+    return resp.Conf;
+  };
+
+  public updatePeer = async (newPeer: Peer): Promise<string> => {
+    const payload = peerPayload(newPeer);
+    const resp = await this.instance.post<AddPeerResponse>('/update', payload);
     return resp.Conf;
   };
 
   public deletePeer = async (hostname: string) => this.instance.delete(`/peer/${hostname}`);
 };
+
+const peerPayload = (p: Peer): Peer => {
+  return {
+    Owner: p.Owner,
+    Hostname: p.Hostname,
+    Description: p.Description, 
+  } as Peer;
+}
 
 export const api = new API();

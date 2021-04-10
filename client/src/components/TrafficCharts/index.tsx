@@ -1,24 +1,27 @@
 import React from "react";
-import TimeSeries from "../../models/time_series";
 import Chart from "./Chart";
 import styles from "./styles.module.sass";
+import { api } from '../../api';
 
-const TrafficCharts = (props: { timeSeries: TimeSeries }) =>
+const TrafficCharts = () => {
+  return (
   <div className={styles.Charts}>
     <div className={styles.Transmit}>
       <Chart 
-        data={props.timeSeries.TX}
         baseColor='#7D71AD'
         name='Transmit'
+        getData={api.getTXTraffic}
       />
     </div>
     <div className={styles.Receive}>
       <Chart
-        data={props.timeSeries.RX}
         baseColor='#4798AE'
+        getData={api.getRXTraffic}
         name='Receive'
       />
     </div>
   </div>
+  )
+};
 
 export default TrafficCharts;

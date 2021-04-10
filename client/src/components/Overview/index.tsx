@@ -1,6 +1,6 @@
 import { Card } from '@blueprintjs/core';
 import sortBy from 'lodash/sortBy';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { api } from '../../api';
 import Report from '../../models/report';
@@ -11,29 +11,22 @@ import PeerComp from '../Peer';
 import TrafficCharts from '../TrafficCharts';
 import WGNicComp from '../WGNic';
 import styles from './styles.module.sass';
+import { OverviewReport } from '../../api/types';
 
 const Overview = React.memo(() => {
   const [ report, setReport ] = useState<Report>();
-  const [ timeSeries, setTimeSeries ] = useState<TimeSeries>({
-    RX: [],
-    TX: [],
-  });
 
-  const { isLoading, error, data } = useQuery(
+  const { isLoading, error } = useQuery(
     'report',
     api.getReport,
     {
       refetchInterval: 2000,
-      refetchIntervalInBackground: true
+      refetchIntervalInBackground: true,
+      onSuccess: (data: OverviewReport) => {
+        setReport(data.Report);
+      }
     }
   );
-
-  useEffect(() => {
-    if (data) {
-      setReport(data.Report);
-      setTimeSeries(data.TimeSeries);
-    }
-  }, [ data ]);
 
   if (isLoading) return (<div>Loading...</div>);
 
@@ -43,7 +36,7 @@ const Overview = React.memo(() => {
   }
 
   const content = report ?
-    <Content report={ report } timeSeries={ timeSeries } /> :
+    <Content report={ report } /> :
     <Empty />;
 
   return content;
@@ -52,13 +45,13 @@ const Overview = React.memo(() => {
 
 const Empty = () => <>No interfaces available yet</>;
 
-const Content = React.memo((props: { report: Report, timeSeries: TimeSeries }) => (
+const Content = React.memo((props: { report: Report }) => (
   <div className={ styles.Overview }>
     <Card>
       <WGNicComp report={ props.report } />
     </Card>
     <Card className={ styles.Charts }>
-      <TrafficCharts timeSeries={ props.timeSeries } />
+      <TrafficCharts />
     </Card>
     <div className={ styles.PeerList }>
       <PeerList peers={ props.report.Peers } />

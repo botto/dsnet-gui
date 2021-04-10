@@ -6,7 +6,7 @@ import (
 	"github.com/naggie/dsnet"
 )
 
-func addNewPeer(newPeer peer) (*dsnet.PeerConfig, error) {
+func addPeer(newPeer peer) (*dsnet.PeerConfig, error) {
 	privateKey := dsnet.GenerateJSONPrivateKey()
 	publicKey := privateKey.PublicKey()
 
@@ -21,23 +21,23 @@ func addNewPeer(newPeer peer) (*dsnet.PeerConfig, error) {
 		Networks:     []dsnet.JSONIPNet{},
 	}
 
-	if len(conf.Network.IPNet.Mask) > 0 {
-		peer.IP = conf.MustAllocateIP()
+	if len(conf.C.Network.IPNet.Mask) > 0 {
+		peer.IP = conf.C.MustAllocateIP()
 	}
 
-	if len(conf.Network6.IPNet.Mask) > 0 {
-		peer.IP6 = conf.MustAllocateIP6()
+	if len(conf.C.Network6.IPNet.Mask) > 0 {
+		peer.IP6 = conf.C.MustAllocateIP6()
 	}
 
-	if err := conf.AddPeer(peer); err != nil {
+	if err := conf.C.AddPeer(peer); err != nil {
 		return nil, err
 	}
 
-	if err := conf.Save(); err != nil {
+	if err := conf.C.Save(); err != nil {
 		return nil, err
 	}
 
-	if err := dsnet.ConfigureDevice(conf); err != nil {
+	if err := dsnet.ConfigureDevice(conf.C); err != nil {
 		return nil, err
 	}
 

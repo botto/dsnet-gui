@@ -12,7 +12,7 @@ func Routes(router *gin.RouterGroup, dsConf *util.DSConf) {
 	conf = dsConf
 	router.GET("", handleGetReport)
 	router.GET("/traffic/rx", handleGetRXTimeSeries)
-	router.GET("/traffic/tx", handleGetRXTimeSeries)
+	router.GET("/traffic/tx", handleGetTXTimeSeries)
 
 	// Once routes are up and the conf is set, start the background tasks
 	start()

@@ -3,6 +3,7 @@ package report
 import (
 	"container/ring"
 	"fmt"
+	"log"
 	"sync"
 	"time"
 
@@ -11,13 +12,11 @@ import (
 )
 
 // SampleRate is how often it will refresh the report data
-const SampleRate = 10 * time.Second
+const SampleRate = 5 * time.Second
 
 var reportDataLock sync.RWMutex
 
 var reportData *dsnet.DsnetReport
-
-var wg *wgctrl.Client
 
 type Report struct {
 	Report *dsnet.DsnetReport
@@ -31,8 +30,8 @@ func start() {
 
 	go func() {
 		// Wait to the next whole minute, makes things neater when sampling
-		// waitUntil := time.Duration(60 - time.Now().Second())
-		// <-time.After(waitUntil * time.Second)
+		waitUntil := time.Duration(60 - time.Now().Second())
+		<-time.After(waitUntil * time.Second)
 		for {
 			updateReport()
 			updateDataPoints()
@@ -44,7 +43,7 @@ func start() {
 func updateReport() {
 	wg, err := wgctrl.New()
 	if err != nil {
-		fmt.Printf("There was a problem: %s", err)
+		fmt.Printf("there was a problem creating a new wireguard controller: %s", err)
 	}
 	defer wg.Close()
 
@@ -54,13 +53,15 @@ func updateReport() {
 	defer conf.Unlock()
 
 	dev, err := wg.Device(conf.C.InterfaceName)
+	if err != nil {
+		log.Printf("there was a problem getting a wireguard device: %s", err)
+	}
 	newData := dsnet.GenerateReport(dev, conf.C, nil)
 	reportData = &newData
 }
 
 func getReport() Report {
 	reportDataLock.RLock()
-	defer reportDataLock.RLock()
-
+	defer reportDataLock.RUnlock()
 	return Report{reportData}
 }

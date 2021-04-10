@@ -5,13 +5,11 @@ declare module 'axios' {
 }
 export default abstract class HttpClient {
   protected readonly instance: AxiosInstance;
-
   public constructor(apiURL?: string) {
     const baseURL = apiURL ? apiURL : `${window.location.origin}/api/v1`;
     this.instance = axios.create({
       baseURL,
     });
-
     this._initializeResponseInterceptor();
   }
 

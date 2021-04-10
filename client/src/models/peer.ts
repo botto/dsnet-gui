@@ -1,4 +1,3 @@
-
 class Peer {
   readonly Hostname   : string;
   readonly Owner      : string;
