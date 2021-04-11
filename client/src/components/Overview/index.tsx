@@ -1,13 +1,12 @@
-import { Card } from '@blueprintjs/core';
+import { Card, HTMLTable } from '@blueprintjs/core';
 import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { api } from '../../api';
 import Report from '../../models/report';
 import ReportPeer from '../../models/report_peer';
-import TimeSeries from '../../models/time_series';
 import AddPeer from '../AddPeer';
-import PeerComp from '../Peer';
+import PeerComp from '../PeerComp';
 import TrafficCharts from '../TrafficCharts';
 import WGNicComp from '../WGNic';
 import styles from './styles.module.sass';
@@ -53,23 +52,31 @@ const Content = React.memo((props: { report: Report }) => (
     <Card className={ styles.Charts }>
       <TrafficCharts />
     </Card>
-    <div className={ styles.PeerList }>
-      <PeerList peers={ props.report.Peers } />
-      <Card className={ styles.Peer } key="add_new">
+      <Card className={ styles.AddPeer } key="add_new">
         <AddPeer />
       </Card>
-    </div>
+      <PeerList peers={ props.report.Peers } />
   </div>
 ));
 
 const PeerList = React.memo((props: { peers: ReportPeer[] }) =>
-  <>
+  <HTMLTable bordered={true} striped={true} className={ styles.PeerList }>
+    <thead>
+    <tr>
+      <th className={styles.Presence}></th>
+      <th className={styles.Hostname}>Hostname</th>
+      <th className={styles.IP}>IP</th>
+      <th className={styles.Owner}>Owner</th>
+      <th className={styles.LastSeen}>Last Seen</th>
+      <th className={styles.Buttons}></th>
+    </tr>
+    </thead>
+    <tbody>
     { sortBy(props.peers, 'Hostname').map((p, i) =>
-      <Card className={ styles.Peer } key={ i }>
-        <PeerComp peer={ p } />
-      </Card>
+       <PeerComp key={ i } peer={ p } />
     ) }
-  </>
+    </tbody>
+  </HTMLTable>
 );
 
 export default Overview;
