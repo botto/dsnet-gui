@@ -6,6 +6,8 @@ import (
 )
 
 func updatePeer(newPeer peer) error {
+	conf.Lock()
+	defer conf.Unlock()
 	// Create a backup of the peers slice so we can restore it on problems
 	backupPeers := conf.C.Peers
 	defer func() {
@@ -19,10 +21,10 @@ func updatePeer(newPeer peer) error {
 	// Track how many peers we update
 	updated := 0
 
-	for _, c := range conf.C.Peers {
+	for i, c := range conf.C.Peers {
 		if newPeer.Hostname == c.Hostname {
-			c.Description = newPeer.Description
-			c.Owner = newPeer.Owner
+			conf.C.Peers[i].Description = newPeer.Description
+			conf.C.Peers[i].Owner = newPeer.Owner
 			updated++
 		}
 	}
@@ -30,11 +32,17 @@ func updatePeer(newPeer peer) error {
 	// Error out if we get more than 1 peer updated
 	if updated > 1 {
 		conf.C.Peers = backupPeers
-		return fmt.Errorf("updatedd %d peers instead of just 1 peer", updated)
+		return fmt.Errorf("updated %d peers instead of just 1 peer", updated)
+	}
+
+	if updated <= 0 {
+		conf.C.Peers = backupPeers
+		return fmt.Errorf("peer %s was not updated", newPeer.Hostname)
 	}
 
 	// Save new peer list
 	err := conf.C.Save()
+
 	if err != nil {
 		return fmt.Errorf("error while updating peers: %s", err.Error())
 	}

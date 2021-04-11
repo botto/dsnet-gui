@@ -18,6 +18,6 @@ func GetOwnerPeerCount(conf *dsnet.DsnetConfig, owner string) int {
 }
 
 type DSConf struct {
-	sync.Mutex
+	sync.RWMutex
 	C *dsnet.DsnetConfig
 }

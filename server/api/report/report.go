@@ -33,14 +33,14 @@ func start() {
 		waitUntil := time.Duration(60 - time.Now().Second())
 		<-time.After(waitUntil * time.Second)
 		for {
-			updateReport()
+			UpdateReport()
 			updateDataPoints()
 			<-time.After(SampleRate)
 		}
 	}()
 }
 
-func updateReport() {
+func UpdateReport() {
 	wg, err := wgctrl.New()
 	if err != nil {
 		fmt.Printf("there was a problem creating a new wireguard controller: %s", err)
@@ -49,8 +49,8 @@ func updateReport() {
 
 	reportDataLock.Lock()
 	defer reportDataLock.Unlock()
-	conf.Lock()
-	defer conf.Unlock()
+	conf.RLock()
+	defer conf.RUnlock()
 
 	dev, err := wg.Device(conf.C.InterfaceName)
 	if err != nil {

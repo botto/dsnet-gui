@@ -7,6 +7,8 @@ import (
 )
 
 func addPeer(newPeer peer) (*dsnet.PeerConfig, error) {
+	conf.Lock()
+	defer conf.Unlock()
 	privateKey := dsnet.GenerateJSONPrivateKey()
 	publicKey := privateKey.PublicKey()
 

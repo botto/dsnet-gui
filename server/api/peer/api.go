@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/botto/dsnet-gui/server/api/report"
 	"github.com/botto/dsnet-gui/server/auth"
 	"github.com/botto/dsnet-gui/server/util"
 	"github.com/gin-gonic/gin"
@@ -28,8 +29,6 @@ func Routes(router *gin.RouterGroup, dsConf *util.DSConf) {
 }
 
 func handleNew(c *gin.Context) {
-	conf.Lock()
-	defer conf.Unlock()
 	peerData, err := getPeerData(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -53,24 +52,23 @@ func handleNew(c *gin.Context) {
 		})
 	}
 
+	report.UpdateReport()
 	c.JSON(http.StatusOK, gin.H{
 		"Conf": peerConf.String(),
 	})
 }
 
 func handleRemove(c *gin.Context) {
-	conf.Lock()
-	defer conf.Unlock()
 	hostName := c.Param("hostname")
+	err := removePeer(hostName)
 
-	err := conf.C.RemovePeer(hostName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"Error": fmt.Sprintf("could not remove peer: %s", err.Error()),
+			"Error": err.Error(),
 		})
 		return
 	}
-	conf.C.Save()
+	report.UpdateReport()
 	c.Status(http.StatusNoContent)
 }
 
@@ -90,9 +88,12 @@ func handleUpdate(c *gin.Context) {
 		})
 		return
 	}
+	report.UpdateReport()
 }
 
 func getPeerData(c *gin.Context) (peer, error) {
+	conf.Lock()
+	defer conf.Unlock()
 	var peerData peer
 	var auth auth.Headers
 
