@@ -19,7 +19,7 @@ const Overview = React.memo(() => {
     'report',
     api.getReport,
     {
-      refetchInterval: 2000,
+      refetchInterval: 10000,
       refetchIntervalInBackground: true,
       onSuccess: (data: OverviewReport) => {
         setReport(data.Report);

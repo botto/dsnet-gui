@@ -9,6 +9,7 @@ interface Props {
 }
 
 const PeerForm = (props: Props) => {
+  const [buttonEnabled, setButtonEnabled] = useState(true);
   const [owner, setOwner] = useState(props.peer.Owner);
   const [hostname, setHostName] = useState(props.peer.Hostname);
   const [description, setDescription] = useState(props.peer.Description);
@@ -39,9 +40,11 @@ const PeerForm = (props: Props) => {
     );
 
     try {
-      props.submit(newPeer);
+      setButtonEnabled(false);
+      await props.submit(newPeer);
     }
     catch (err) {
+      setButtonEnabled(true);
       setTopTostId(TopToast.show({
         message: `There was a problem adding the new peer: ${err}`,
         intent: Intent.DANGER,
@@ -86,6 +89,7 @@ const PeerForm = (props: Props) => {
         fill={true}
         text='Save'
         onClick={submitForm}
+        loading={!buttonEnabled}
       />
     </Card>
   );

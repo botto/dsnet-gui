@@ -34,7 +34,6 @@ const DeleteButton = React.memo((props: Props) => {
         outlined={ false }
         className={ styles.Button }
         intent="danger"
-        disabled={!props.peer.Online}
       />
     </div>
   );
