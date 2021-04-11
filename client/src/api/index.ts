@@ -43,7 +43,7 @@ class API extends HttpClient {
 
   public updatePeer = async (newPeer: Peer): Promise<string> => {
     const payload = peerPayload(newPeer);
-    const resp = await this.instance.post<AddPeerResponse>('/update', payload);
+    const resp = await this.instance.patch<AddPeerResponse>('/peer', payload);
     return resp.Conf;
   };
 
