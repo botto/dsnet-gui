@@ -1,13 +1,29 @@
 import { Button, Callout, Card, Dialog } from '@blueprintjs/core';
 import React, { useState } from 'react';
 import { QRCode } from "react-qr-svg";
-import NewPeerForm from './NewPeerForm';
 import styles from './styles.module.sass';
+import { useMutation, useQueryClient } from 'react-query';
+import { api } from '../../api';
+import PeerForm from '../PeerForm';
+import Peer from '../../models/peer';
 
 const AddPeer = React.memo(() => {
   const [formOpen, setFormOpen] = useState(false);
   const [qrOpen, setQROpen] = useState(false);
   const [peerConf, setPeerConf] = useState('');
+
+  const queryClient = useQueryClient(); 
+  const addPeerMutation = useMutation(api.addPeer, {
+    onSuccess: (conf: string) => {
+      queryClient.invalidateQueries('report');
+
+      setPeerConf(conf);
+
+      // Close the form and open the QR code
+      setFormOpen(false);
+      setQROpen(true);
+    }
+  });
 
   const toggleForm = () => setFormOpen(!formOpen);
   const toggleQR = () => {
@@ -20,27 +36,18 @@ const AddPeer = React.memo(() => {
     }
   }
 
-  const doneHandler = (conf: string) => {
-    setPeerConf(conf);
-    // Close the form and open the QR code
-    setFormOpen(false);
-    setQROpen(true);
-  }
-
   return (
     <div>
       <Button
         icon='plus'
         text='Add Peer'
-        outlined={ true }
         fill={ true }
         large={ true }
         onClick={ toggleForm }
+        intent='primary'
       />
       <Dialog isOpen={ formOpen } onClose={ toggleForm }>
-        <NewPeerForm
-          done={ doneHandler }
-        />
+        <PeerForm submit={ addPeerMutation.mutateAsync } peer={ new Peer('', '', '', false) } />
       </Dialog>
       <Dialog isOpen={ qrOpen } onClose={ toggleQR }>
         <Card>

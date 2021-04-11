@@ -1,25 +1,23 @@
 import { Button, Card, Classes, Intent, Label } from '@blueprintjs/core';
-import React, { useRef, useState } from 'react';
-import { useMutation, useQueryClient } from 'react-query';
-import { api } from '../../api';
+import React, { useState } from 'react';
 import Peer from '../../models/peer';
 import { TopToast } from '../Toast';
 
-const NewPeerForm = (props: { done: (conf: string) => void }) => {
-  const queryClient = useQueryClient();
+interface Props {
+  peer: Peer
+  submit: (newPeer: Peer) => {}
+}
 
-  const addPeerMutation = useMutation(api.addPeer, {
-    onSuccess: () => { queryClient.invalidateQueries('report'); }
-  });
-  const owner = useRef<HTMLInputElement>(null);
-  const hostname = useRef<HTMLInputElement>(null);
-  const description = useRef<HTMLInputElement>(null);
+const PeerForm = (props: Props) => {
+  const [owner, setOwner] = useState(props.peer.Owner);
+  const [hostname, setHostName] = useState(props.peer.Hostname);
+  const [description, setDescription] = useState(props.peer.Description);
   const [topToastId, setTopTostId] = useState('');
 
   const submitForm = async () => {
-    if (owner.current == null
-      || hostname.current == null 
-      || description.current == null)
+    if (owner == null
+      || hostname == null 
+      || description == null)
     {
       setTopTostId(TopToast.show({
         message: 'Some fields are missing',
@@ -28,17 +26,20 @@ const NewPeerForm = (props: { done: (conf: string) => void }) => {
       }));
       return;
     }
+
+    // Clear top toast if nothing was wrong
+    TopToast.dismiss(topToastId);
+    setTopTostId('');
+
     const newPeer = new Peer(
-      hostname.current.value,
-      owner.current.value,
-      description.current.value,
+      hostname,
+      owner,
+      description,
+      false,
     );
 
     try {
-      const newPeerConf = await addPeerMutation.mutateAsync(newPeer);
-      TopToast.dismiss(topToastId);
-      setTopTostId('');
-      props.done(newPeerConf);
+      props.submit(newPeer);
     }
     catch (err) {
       setTopTostId(TopToast.show({
@@ -54,28 +55,31 @@ const NewPeerForm = (props: { done: (conf: string) => void }) => {
       <Label>
         Owner
         <input
-          ref={owner}
           placeholder="Bob"
           className={`${Classes.INPUT} ${Classes.FILL}`}
           required={true}
+          onChange={(e) => setOwner(e.target.value)}
+          value={owner}
         />
       </Label>
       <Label>
         Hostname (unique)
         <input
-          ref={hostname}
           placeholder="peer.example.com"
           className={`${Classes.INPUT} ${Classes.FILL}`}
           required={true}
+          onChange={(e) => setHostName(e.target.value)}
+          value={hostname}
         />
       </Label>
       <Label>
         Description
         <input
-          ref={description}
           placeholder="Peer is in server closet"
           className={`${Classes.INPUT} ${Classes.FILL}`}
           required={true}
+          onChange={(e) => setDescription(e.target.value)}
+          value={description}
         />
       </Label>
       <Button
@@ -87,4 +91,4 @@ const NewPeerForm = (props: { done: (conf: string) => void }) => {
   );
 };
 
-export default NewPeerForm;
+export default PeerForm;
