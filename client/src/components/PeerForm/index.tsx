@@ -3,9 +3,16 @@ import React, { useState } from 'react';
 import Peer from '../../models/peer';
 import { TopToast } from '../Toast';
 
+enum DisabledFields {
+  NONE = 0,
+  FIELD_HOSTNAME = 1 << 0,
+  FIELD_DESCRIPTION = 1 << 1,
+  FIELD_OWNER = 1 << 2
+}
 interface Props {
   peer: Peer
   submit: (newPeer: Peer) => {}
+  disabledFields?: DisabledFields,
 }
 
 const PeerForm = (props: Props) => {
@@ -14,6 +21,7 @@ const PeerForm = (props: Props) => {
   const [hostname, setHostName] = useState(props.peer.Hostname);
   const [description, setDescription] = useState(props.peer.Description);
   const [topToastId, setTopTostId] = useState('');
+  const disabledFields = props.disabledFields ? props.disabledFields : DisabledFields.NONE;
 
   const submitForm = async () => {
     if (owner == null
@@ -63,6 +71,7 @@ const PeerForm = (props: Props) => {
           required={true}
           onChange={(e) => setOwner(e.target.value)}
           value={owner}
+          disabled={!!(disabledFields & DisabledFields.FIELD_OWNER)}
         />
       </Label>
       <Label>
@@ -73,6 +82,7 @@ const PeerForm = (props: Props) => {
           required={true}
           onChange={(e) => setHostName(e.target.value)}
           value={hostname}
+          disabled={!!(disabledFields & DisabledFields.FIELD_HOSTNAME)}
         />
       </Label>
       <Label>
@@ -83,6 +93,7 @@ const PeerForm = (props: Props) => {
           required={true}
           onChange={(e) => setDescription(e.target.value)}
           value={description}
+          disabled={!!(disabledFields & DisabledFields.FIELD_DESCRIPTION)}
         />
       </Label>
       <Button
@@ -94,5 +105,8 @@ const PeerForm = (props: Props) => {
     </Card>
   );
 };
+
+
+PeerForm.Fields = DisabledFields;
 
 export default PeerForm;

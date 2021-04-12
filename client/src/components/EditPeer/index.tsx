@@ -32,7 +32,7 @@ const EditPeer = (props: Props) => {
         intent="none"
       />
       <Dialog isOpen={ open } onClose={ onClose }>
-        <PeerForm submit={ updatePeerMutation.mutateAsync } peer={ props.peer } />
+        <PeerForm submit={ updatePeerMutation.mutateAsync } peer={ props.peer } disabledFields={PeerForm.Fields.FIELD_HOSTNAME} />
       </Dialog>
     </>
   )

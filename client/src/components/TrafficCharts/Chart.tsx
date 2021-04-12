@@ -100,7 +100,6 @@ const ChartComp = React.memo((props: ChartProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointColor = useRef();
   const lineColor = useRef(new MooColor(props.baseColor));
-  const uniqueTimeStamps = useRef<string[]>([]);
   const queryEnabled = useRef(false);
 
   const getTimeseries = (points: DataPoint[]): ChartDataPoint[] => points.reduce((out: ChartDataPoint[], d: DataPoint, i: number, arr: DataPoint[]) => {

@@ -1,6 +1,6 @@
-import { Button, Icon, Text } from '@blueprintjs/core';
+import { Button, Icon } from '@blueprintjs/core';
 import moment from 'moment'
-import React, { useState } from 'react';
+import React from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { api } from '../../api';
 import ReportPeer from '../../models/report_peer';
