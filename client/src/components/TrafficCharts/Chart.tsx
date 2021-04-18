@@ -42,6 +42,9 @@ const initChart = (
       responsive: true,
       aspectRatio: 3,
       plugins: {
+        legend: {
+          display: false,
+        },
         tooltip: {
           callbacks: {
             label: (context: TooltipItem<"line">) => {
