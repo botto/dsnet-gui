@@ -1,5 +1,6 @@
-import ReportPeer from './report_peer';
-interface DSNetReport {
+// import PeerData from './report_peer';
+import Peer from './peer';
+interface Report {
   ExternalIP   : string;
   InterfaceName: string;
   ListenPort   : number;
@@ -12,7 +13,7 @@ interface DSNetReport {
   ReceiveBytes : number;
   TransmitByes : number;
   TXBytesTimeSeries : number[];
-  Peers        : ReportPeer[];
+  Peers        : Peer[];
 }
 
-export default DSNetReport;
+export default Report;

@@ -3,12 +3,12 @@ import moment from 'moment'
 import React from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { api } from '../../api';
-import ReportPeer from '../../models/report_peer';
+import Peer from '../../models/peer';
 import EditPeer from '../EditPeer';
 import styles from './styles.module.sass';
 
 interface Props {
-  peer: ReportPeer
+  peer: Peer
 }
 
 const PresenceIcon = React.memo((props: Props) =>

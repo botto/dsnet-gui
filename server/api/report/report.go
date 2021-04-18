@@ -60,8 +60,8 @@ func UpdateReport() {
 	reportData = &newData
 }
 
-func getReport() Report {
+func getReport() *dsnet.DsnetReport {
 	reportDataLock.RLock()
 	defer reportDataLock.RUnlock()
-	return Report{reportData}
+	return reportData
 }

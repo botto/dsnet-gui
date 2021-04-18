@@ -1,19 +1,15 @@
 import DataPoint from '../models/data_point';
 import Peer from '../models/peer';
 import HttpClient from './HttpClient';
-import { AddPeerResponse, OverviewReport, ReportResponse } from './types';
+import { AddPeerResponse } from './types';
+import Report from '../models/report';
 
 class API extends HttpClient {
   public constructor() {
     super(process.env.REACT_APP_API_BASE_URL);
   }
 
-  public getReport = async () => {
-    const resp = await this.instance.get<ReportResponse>('/report');
-    return {
-      Report: resp.Report,
-    } as OverviewReport;
-  };
+  public getReport = async () => this.instance.get<Report>('/report');
 
   public getRXTraffic = async () => {
     type RespDataType = {

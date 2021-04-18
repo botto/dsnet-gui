@@ -1,4 +1,4 @@
-import DSNetReport from '../models/report';
+import IReport from '../models/report';
 
 export interface NewPeerPayload {
   Owner: string
@@ -10,14 +10,6 @@ export interface AddPeerResponse {
   Conf: string
 }
 
-export interface ReportResponse {
-  Report: DSNetReport,
-}
-
 export interface ErrorResponse {
   Error: string
 }
-
-export interface OverviewReport {
-  Report: DSNetReport;
-};

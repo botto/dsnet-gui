@@ -4,13 +4,12 @@ import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { api } from '../../api';
 import Report from '../../models/report';
-import ReportPeer from '../../models/report_peer';
+import Peer from '../../models/peer';
 import AddPeer from '../AddPeer';
 import PeerComp from '../PeerComp';
 import TrafficCharts from '../TrafficCharts';
 import WGNicComp from '../WGNic';
 import styles from './styles.module.sass';
-import { OverviewReport } from '../../api/types';
 
 const Overview = React.memo(() => {
   const [ report, setReport ] = useState<Report>();
@@ -21,8 +20,8 @@ const Overview = React.memo(() => {
     {
       refetchInterval: 10000,
       refetchIntervalInBackground: true,
-      onSuccess: (data: OverviewReport) => {
-        setReport(data.Report);
+      onSuccess: (data: Report) => {
+        setReport(data);
       }
     }
   );
@@ -59,7 +58,7 @@ const Content = React.memo((props: { report: Report }) => (
   </div>
 ));
 
-const PeerList = React.memo((props: { peers: ReportPeer[] }) =>
+const PeerList = React.memo((props: { peers: Peer[] }) =>
   <HTMLTable bordered={true} striped={true} className={ styles.PeerList }>
     <thead>
     <tr>
