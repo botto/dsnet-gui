@@ -24,7 +24,16 @@ const DeleteButton = React.memo((props: Props) => {
   const deleteMutate = useMutation(api.deletePeer, {
     onSuccess: () => { queryClient.invalidateQueries('report'); },
   });
-  const doDelete = () => deleteMutate.mutate(props.peer.Hostname);
+  const doDelete = () => {
+    new Promise(resolve =>
+      resolve(window.confirm(`Are you sure you want to delete ${props.peer.Hostname}`))
+    )
+    .then(confirm => {
+      if (confirm) {
+        deleteMutate.mutate(props.peer.Hostname);
+      }
+    });
+  }  
   return (
     <div className={ styles.Delete }>
       <Button
