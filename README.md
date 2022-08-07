@@ -2,7 +2,7 @@
 
 ![screenshot of gui](../assets/screenshot.png)
 
-dsnet-gui gives you an overview of all your connected WireGuard clients when using [dsnet](https://github.com/naggie/dsnet).  
+dsnet-gui gives you an overview of all your connected WireGuard clients when using [dsnet](https://github.com/botto/dsnet).  
 
 To make `make`  
 To run do `sudo ./dsnet-gui`  

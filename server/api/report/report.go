@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/naggie/dsnet"
+	"github.com/naggie/dsnet/cmd/cli"
 	"golang.zx2c4.com/wireguard/wgctrl"
 )
 
@@ -16,10 +16,10 @@ const SampleRate = 5 * time.Second
 
 var reportDataLock sync.RWMutex
 
-var reportData *dsnet.DsnetReport
+var reportData *cli.DsnetReport
 
 type Report struct {
-	Report *dsnet.DsnetReport
+	Report *cli.DsnetReport
 }
 
 func start() {
@@ -56,11 +56,11 @@ func UpdateReport() {
 	if err != nil {
 		log.Printf("there was a problem getting a wireguard device: %s", err)
 	}
-	newData := dsnet.GenerateReport(dev, conf.C, nil)
+	newData := cli.GetReport(dev, conf.C, nil)
 	reportData = &newData
 }
 
-func getReport() *dsnet.DsnetReport {
+func getReport() *cli.DsnetReport {
 	reportDataLock.RLock()
 	defer reportDataLock.RUnlock()
 	return reportData

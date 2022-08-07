@@ -1,6 +1,7 @@
 package server
 
 import (
+	"embed"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,16 +10,39 @@ import (
 	"strings"
 
 	"github.com/botto/dsnet-gui/server/api"
+	"github.com/botto/dsnet-gui/server/util"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"golang.zx2c4.com/wireguard/wgctrl"
 )
 
 var router = gin.New()
 
 // Start launches the HTTP server. This method will not return until the server
 // is shutdown.
-func Start() {
+func Start(clientUI *embed.FS) {
 	port := viper.GetString("port")
+
+	wg, err := wgctrl.New()
+	if err != nil {
+		log.Fatalf("could not get wgctrl handler")
+	}
+	defer wg.Close()
+
+	dsnetConfig, err := util.LoadConfigFile()
+	if err != nil {
+		log.Fatalf("failed to load config file: %s", err)
+	}
+
+	conf := &util.DSConf{
+		C: dsnetConfig,
+	}
+
+	_, err = wg.Device(conf.C.InterfaceName)
+	if err != nil {
+		log.Panicf("could not get device, %s", err)
+		return
+	}
 
 	listenString := fmt.Sprintf(":%v", port)
 
@@ -26,7 +50,7 @@ func Start() {
 	addCORSHandler()
 	add404Handler()
 
-	api.Routes(router)
+	api.Routes(router, clientUI, conf)
 
 	listenAndServe(listenString)
 }

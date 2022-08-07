@@ -24,6 +24,7 @@ SOFTWARE.
 package cmd
 
 import (
+	"embed"
 	"fmt"
 	"os"
 
@@ -31,11 +32,10 @@ import (
 
 	"github.com/botto/dsnet-gui/server"
 
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var clientUI *embed.FS
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -45,13 +45,14 @@ var rootCmd = &cobra.Command{
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
 	Run: func(cmd *cobra.Command, args []string) {
-		server.Start()
+		server.Start(clientUI)
 	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
+func Execute(clientUI_ *embed.FS) {
+	clientUI = clientUI_
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -65,33 +66,15 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.dsnet-gui.yaml)")
-
 	viper.SetDefault("port", "20080")
+	viper.SetDefault("config_file", "/etc/dsnetconfig.json")
+	viper.SetDefault("fallback_wg_bing", "wireguard-go")
+	viper.SetDefault("listen_port", 51820)
+	viper.SetDefault("report_file", "/var/lib/dsnetreport.json")
+	viper.SetDefault("interface_name", "dsnet")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		// Search config in home directory with name ".dsnet-gui" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".dsnet-gui")
-	}
-
 	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
 }

@@ -1,47 +1,66 @@
 package peer
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/naggie/dsnet"
+	"github.com/naggie/dsnet/cmd/cli"
+	"github.com/naggie/dsnet/lib"
 )
 
-func addPeer(newPeer peer) (*dsnet.PeerConfig, error) {
+func addPeer(newPeer peer) (lib.Peer, error) {
 	conf.Lock()
 	defer conf.Unlock()
-	privateKey := dsnet.GenerateJSONPrivateKey()
+
+	server := cli.GetServer(conf.C)
+
+	privateKey, err := lib.GenerateJSONPrivateKey()
+	if err != nil {
+		return lib.Peer{}, fmt.Errorf("failed to generate private key: %s", err)
+	}
 	publicKey := privateKey.PublicKey()
 
-	peer := dsnet.PeerConfig{
+	psk, err := lib.GenerateJSONKey()
+	if err != nil {
+		return lib.Peer{}, fmt.Errorf("failed to generate psk key: %s", err)
+	}
+
+	peer := lib.Peer{
 		Owner:        newPeer.Owner,
 		Hostname:     newPeer.Hostname,
 		Description:  newPeer.Description,
 		Added:        time.Now(),
 		PublicKey:    publicKey,
 		PrivateKey:   privateKey, // omitted from server config JSON!
-		PresharedKey: dsnet.GenerateJSONKey(),
-		Networks:     []dsnet.JSONIPNet{},
+		PresharedKey: psk,
+		Networks:     []lib.JSONIPNet{},
 	}
 
 	if len(conf.C.Network.IPNet.Mask) > 0 {
-		peer.IP = conf.C.MustAllocateIP()
+		peer.IP, err = server.AllocateIP()
+		if err != nil {
+			return lib.Peer{}, fmt.Errorf("failed to allocate ip: %s", err)
+		}
 	}
 
 	if len(conf.C.Network6.IPNet.Mask) > 0 {
-		peer.IP6 = conf.C.MustAllocateIP6()
+		peer.IP6, err = server.AllocateIP6()
+		if err != nil {
+			return lib.Peer{}, fmt.Errorf("failed to allocate ip6: %s", err)
+		}
 	}
 
 	if err := conf.C.AddPeer(peer); err != nil {
-		return nil, err
+		return lib.Peer{}, fmt.Errorf("failed to add peer: %s", err)
 	}
 
 	if err := conf.C.Save(); err != nil {
-		return nil, err
+		return lib.Peer{}, fmt.Errorf("failed to save peer: %s", err)
 	}
 
-	if err := dsnet.ConfigureDevice(conf.C); err != nil {
-		return nil, err
+	if err := server.ConfigureDevice(); err != nil {
+		return lib.Peer{}, err
 	}
 
-	return &peer, nil
+	return peer, nil
 }

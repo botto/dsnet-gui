@@ -9,7 +9,8 @@ import (
 	"github.com/botto/dsnet-gui/server/auth"
 	"github.com/botto/dsnet-gui/server/util"
 	"github.com/gin-gonic/gin"
-	"github.com/naggie/dsnet"
+	"github.com/naggie/dsnet/cmd/cli"
+	"github.com/naggie/dsnet/lib"
 )
 
 var conf *util.DSConf
@@ -45,7 +46,22 @@ func handleNew(c *gin.Context) {
 		return
 	}
 
-	peerConf, err := dsnet.GetWGPeerTemplate(dsnet.WGQuick, peer, conf.C)
+	server := cli.GetServer(conf.C)
+
+	libPeer := lib.Peer{
+		Hostname:     peer.Hostname,
+		Owner:        peer.Owner,
+		Description:  peer.Description,
+		IP:           peer.IP,
+		IP6:          peer.IP6,
+		Added:        peer.Added,
+		PublicKey:    peer.PublicKey,
+		PrivateKey:   peer.PrivateKey,
+		PresharedKey: peer.PresharedKey,
+		Networks:     peer.Networks,
+	}
+
+	peerConf, err := lib.AsciiPeerConfig(libPeer, "wgquick", *server)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": fmt.Sprintf("could not get wg template: %s", err.Error()),
