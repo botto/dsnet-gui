@@ -1,7 +1,7 @@
 import { Button, Icon } from '@blueprintjs/core';
 import moment from 'moment'
 import React from 'react';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../api';
 import Peer from '../../models/peer';
 import EditPeer from '../EditPeer';
@@ -22,7 +22,7 @@ const TimeStamp = React.memo((props: Props) => {
 const DeleteButton = React.memo((props: Props) => {
   const queryClient = useQueryClient();
   const deleteMutate = useMutation(api.deletePeer, {
-    onSuccess: () => { queryClient.invalidateQueries('report'); },
+    onSuccess: () => { queryClient.invalidateQueries(['report']); },
   });
   const doDelete = () => {
     new Promise(resolve =>

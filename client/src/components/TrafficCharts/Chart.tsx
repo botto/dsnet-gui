@@ -5,7 +5,7 @@ import times from 'lodash/times';
 import MooColor from 'moo-color';
 import moment from 'moment';
 import 'chartjs-adapter-moment';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { isNumber, isArray } from 'lodash';
 import styles from './styles.module.sass';
 import DataPoint from '../../models/data_point';
@@ -127,7 +127,7 @@ const ChartComp = React.memo((props: ChartProps) => {
 
 
   const { error } = useQuery(
-    props.name,
+    [props.name],
     props.getData,
     {
       refetchInterval: 2000,

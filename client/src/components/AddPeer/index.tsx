@@ -2,7 +2,7 @@ import { Button, Callout, Card, Dialog } from '@blueprintjs/core';
 import React, { useState } from 'react';
 import { QRCode } from "react-qr-svg";
 import styles from './styles.module.sass';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../api';
 import PeerForm from '../PeerForm';
 import Peer from '../../models/peer';
@@ -15,7 +15,7 @@ const AddPeer = React.memo(() => {
   const queryClient = useQueryClient(); 
   const addPeerMutation = useMutation(api.addPeer, {
     onSuccess: (conf: string) => {
-      queryClient.invalidateQueries('report');
+      queryClient.invalidateQueries([ 'report' ]);
 
       setPeerConf(conf);
 

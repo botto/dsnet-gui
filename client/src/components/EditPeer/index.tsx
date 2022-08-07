@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Dialog } from '@blueprintjs/core';
 import styles from './styles.module.sass';
 import Peer from '../../models/peer';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../api';
 import PeerForm from '../PeerForm';
 
@@ -17,7 +17,7 @@ const EditPeer = (props: Props) => {
   const queryClient = useQueryClient();
   const updatePeerMutation = useMutation(api.updatePeer, {
     onSuccess: () => {
-      queryClient.invalidateQueries('report');
+      queryClient.invalidateQueries(['report']);
       setOpen(false);
     }
   });

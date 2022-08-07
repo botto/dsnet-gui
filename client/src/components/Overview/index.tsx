@@ -1,7 +1,7 @@
 import { Card, HTMLTable } from '@blueprintjs/core';
 import sortBy from 'lodash/sortBy';
 import React, { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '../../api';
 import Report from '../../models/report';
 import Peer from '../../models/peer';
@@ -15,7 +15,7 @@ const Overview = React.memo(() => {
   const [ report, setReport ] = useState<Report>();
 
   const { isLoading, error } = useQuery(
-    'report',
+    ['report'],
     api.getReport,
     {
       refetchInterval: 10000,

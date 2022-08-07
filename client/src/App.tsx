@@ -1,12 +1,11 @@
-import React from 'react';
 import { Colors } from '@blueprintjs/core';
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import './base.css';
 
 // Load custom comps after blueprint css.
 import Overview from './components/Overview';
-import styles from './styles.module.sass';
+import styles from './styles.module.scss';
 
 const queryClient = new QueryClient();
 
