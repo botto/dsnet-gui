@@ -166,6 +166,10 @@ const ChartComp = React.memo((props: ChartProps) => {
       lineColor.current.clone().lighten(10).toRgb(),
     );
     queryEnabled.current = true;
+
+    return (() => {
+      chartRef.current.destroy();
+    });
   }, [canvasRef, pointColor, lineColor, props.baseColor]);
 
 

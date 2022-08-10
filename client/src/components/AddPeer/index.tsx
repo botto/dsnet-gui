@@ -8,11 +8,11 @@ import PeerForm from '../PeerForm';
 import Peer from '../../models/peer';
 
 const AddPeer = React.memo(() => {
-  const [formOpen, setFormOpen] = useState(false);
-  const [qrOpen, setQROpen] = useState(false);
-  const [peerConf, setPeerConf] = useState('');
+  const [ formOpen, setFormOpen ] = useState(false);
+  const [ qrOpen, setQROpen ] = useState(false);
+  const [ peerConf, setPeerConf ] = useState('');
 
-  const queryClient = useQueryClient(); 
+  const queryClient = useQueryClient();
   const addPeerMutation = useMutation(api.addPeer, {
     onSuccess: (conf: string) => {
       queryClient.invalidateQueries([ 'report' ]);
@@ -25,49 +25,49 @@ const AddPeer = React.memo(() => {
     }
   });
 
-  const toggleForm = () => setFormOpen(!formOpen);
-  const toggleQR = () => {
-    if (qrOpen) {
-      setPeerConf('');
-      setQROpen(false);
-    }
-    else {
-      setQROpen(true);
-    }
+
+  const closeForm = () => setFormOpen(false);
+  const openForm = () => setFormOpen(true);
+
+  const closeQR = () => {
+    setPeerConf('');
+    setQROpen(false);
   }
+
+  const openQR = () => setQROpen(true);
 
   return (
     <div>
       <Button
         icon='plus'
         text='Add Peer'
-        fill={ true }
-        large={ true }
-        onClick={ toggleForm }
+        fill={true}
+        large={true}
+        onClick={openForm}
         intent='primary'
       />
-      <Dialog isOpen={ formOpen } onClose={ toggleForm }>
-        <PeerForm submit={ addPeerMutation.mutateAsync } peer={ new Peer('', '', '', false) } />
+      <Dialog isOpen={formOpen} onClose={closeForm}>
+        <PeerForm submit={addPeerMutation.mutateAsync} peer={new Peer('', '', '', false)} />
       </Dialog>
-      <Dialog isOpen={ qrOpen } onClose={ toggleQR }>
+      <Dialog isOpen={qrOpen} onClose={closeQR}>
         <Card>
           <QRCode
             level="H"
-            value={ peerConf }
+            value={peerConf}
           />
           <Callout>
-            <pre className={ styles.Conf }>
-              { peerConf }
+            <pre className={styles.Conf}>
+              {peerConf}
             </pre>
           </Callout>
         </Card>
         <Button
           icon='cross'
           text='Done'
-          outlined={ true }
-          large={ true }
-          onClick={ toggleQR }
-          className={ styles.Done }
+          outlined={true}
+          large={true}
+          onClick={closeQR}
+          className={styles.Done}
         />
       </Dialog>
     </div>
