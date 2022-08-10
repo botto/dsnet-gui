@@ -61,7 +61,7 @@ func handleNew(c *gin.Context) {
 		Networks:     peer.Networks,
 	}
 
-	peerConf, err := lib.AsciiPeerConfig(libPeer, "wgquick", *server)
+	peerConf, err := lib.GetWGPeerTemplate(libPeer, lib.WGQuick, *server)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Error": fmt.Sprintf("could not get wg template: %s", err.Error()),

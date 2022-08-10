@@ -41,10 +41,9 @@ func updatePeer(newPeer peer) error {
 	}
 
 	// Save new peer list
-	err := conf.C.Save()
-
-	if err != nil {
+	if err := conf.C.Save(); err != nil {
 		return fmt.Errorf("error while updating peers: %s", err.Error())
 	}
+
 	return nil
 }

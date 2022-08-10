@@ -58,7 +58,11 @@ func addPeer(newPeer peer) (lib.Peer, error) {
 		return lib.Peer{}, fmt.Errorf("failed to save peer: %s", err)
 	}
 
-	if err := server.ConfigureDevice(); err != nil {
+	// Get a new instance of the server so we can correctly configure
+	// the underlying
+	newServer := cli.GetServer(conf.C)
+
+	if err := newServer.ConfigureDevice(); err != nil {
 		return lib.Peer{}, err
 	}
 
